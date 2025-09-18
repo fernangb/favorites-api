@@ -1,7 +1,7 @@
 import {
   DefaultEntityProps,
   DefaultEntity,
-} from 'src/module/shared/entity/default.entity';
+} from '../../../../module/shared/entity/default.entity';
 
 interface CustomerProps extends DefaultEntityProps {
   name: string;

@@ -28,12 +28,12 @@ API para gerenciar os produtos favoritos dos clientes.
 
 <details>
 <summary>📂 Arquitetura</summary>
+![Diagrama da Arquitetura](./docs/clean-arch.jpg)
 
 - **Clean Architecture:** separação entre domínio, aplicação e infraestrutura
 - **Repository:** abstrai acesso ao banco de dados
 - **Service:** encapsula regras de negócio
 - **Testes:** testes unitários
-![Diagrama da Arquitetura](./docs/clean-arch.jpg)
 
 </details>
 
@@ -67,7 +67,7 @@ docker-compose up -d
 npm run start:dev
 ```
 
-7. Accesse a documentação do Swagger: http://localhost:3000/api
+7. Accesse a documentação do Swagger: http://localhost:3000/docs
 
 </details>
 

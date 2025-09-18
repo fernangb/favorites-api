@@ -1,9 +1,9 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { CustomerEntity } from 'src/module/customer/domain/entity/customer.entity';
-import { ICustomerRepository } from 'src/module/customer/domain/repository/customer.repository';
+import { CustomerEntity } from '../../../../../module/customer/domain/entity/customer.entity';
+import { ICustomerRepository } from '../../../../../module/customer/domain/repository/customer.repository';
 import { Repository } from 'typeorm';
 import { TypeOrmCustomerModel } from '../model/typeorm.customer.model';
-import { TypeOrmCustomerMapper } from '../maper/typeorm.customer.mapper';
+import { TypeOrmCustomerMapper } from '../mapper/typeorm.customer.mapper';
 
 export class TypeOrmCustomerRepository implements ICustomerRepository {
   constructor(
@@ -17,7 +17,7 @@ export class TypeOrmCustomerRepository implements ICustomerRepository {
     await this.repository.save(this.repository.create(model));
   }
 
-  async findByEmail(email: string): Promise<CustomerEntity> {
+  async findOneByEmail(email: string): Promise<CustomerEntity> {
     const model = await this.repository.findOne({ where: { email } });
 
     return TypeOrmCustomerMapper.toEntity(model);

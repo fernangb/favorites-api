@@ -7,7 +7,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CreateCustomerRequest } from '../../application/dto/create-customer.dto';
-import { DefaultErrorResponse } from 'src/module/shared/error/default.error';
+import { DefaultErrorResponse } from '../../../../module/shared/error/default.error';
 
 @Controller('customers')
 @ApiTags('Customers')

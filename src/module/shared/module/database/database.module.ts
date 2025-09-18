@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TypeOrmCustomerModel } from 'src/module/customer/infra/database/model/typeorm.customer.model';
+import { TypeOrmCustomerModel } from '../../../../module/customer/infra/database/model/typeorm.customer.model';
 
 @Module({
   imports: [

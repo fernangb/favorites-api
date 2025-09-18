@@ -8,7 +8,13 @@ import { TypeOrmCustomerRepository } from './infra/database/repository/typeorm.c
 @Module({
   imports: [TypeOrmModule.forFeature([TypeOrmCustomerModel])],
   controllers: [CustomerController],
-  providers: [CustomerService, TypeOrmCustomerRepository],
-  exports: [CustomerService],
+  providers: [
+    CustomerService,
+    {
+      provide: 'ICustomerRepository',
+      useClass: TypeOrmCustomerRepository,
+    },
+  ],
+  exports: [],
 })
 export class CustomerModule {}
