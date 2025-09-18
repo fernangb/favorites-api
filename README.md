@@ -67,7 +67,7 @@ docker-compose up -d
 npm run start:dev
 ```
 
-7. Accesse a documentação do Swagger: http://localhost:3000/docs
+7. Accesse a documentação do Swagger: http://localhost:3000/api
 
 </details>
 
