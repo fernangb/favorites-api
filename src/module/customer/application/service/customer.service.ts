@@ -2,11 +2,13 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { CreateCustomerRequest } from '../dto/create-customer.dto';
 import { CustomerEntity } from '../../domain/entity/customer.entity';
 import { TypeOrmCustomerRepository } from '../../infra/database/repository/typeorm.customer.repository';
+import { RepositoryEnum } from '../../../../module/shared/enum/repository.enum';
+import { FindCustomerResponse } from '../dto/find-customer.dto';
 
 @Injectable()
 export class CustomerService {
   constructor(
-    @Inject('ICustomerRepository')
+    @Inject(RepositoryEnum.CUSTOMER)
     private readonly repository: TypeOrmCustomerRepository,
   ) {}
 
@@ -21,5 +23,15 @@ export class CustomerService {
     });
 
     return this.repository.create(customer);
+  }
+
+  async findAll(): Promise<FindCustomerResponse> {
+    const response = await this.repository.findAll();
+
+    return { data: response };
+  }
+
+  async findOneById(id: string): Promise<CustomerEntity> {
+    return this.repository.findOneById(id);
   }
 }

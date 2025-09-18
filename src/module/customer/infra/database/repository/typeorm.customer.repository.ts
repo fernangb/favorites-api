@@ -22,4 +22,15 @@ export class TypeOrmCustomerRepository implements ICustomerRepository {
 
     return TypeOrmCustomerMapper.toEntity(model);
   }
+
+  async findOneById(id: string): Promise<CustomerEntity> {
+    const model = await this.repository.findOne({ where: { id } });
+
+    return TypeOrmCustomerMapper.toEntity(model);  }
+
+  async findAll(): Promise<CustomerEntity[]> {
+    const models = await this.repository.find();
+
+    return TypeOrmCustomerMapper.toEntityList(models);
+  }
 }

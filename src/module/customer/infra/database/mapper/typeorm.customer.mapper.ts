@@ -25,4 +25,8 @@ export class TypeOrmCustomerMapper {
       updatedAt: entity.updatedAt,
     } as TypeOrmCustomerModel;
   }
+
+  static toEntityList(list: TypeOrmCustomerModel[]): CustomerEntity[] {
+    return list.map((model) => TypeOrmCustomerMapper.toEntity(model));
+  }
 }
