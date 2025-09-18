@@ -4,6 +4,8 @@ import { ICustomerRepository } from '../../domain/repository/customer.repository
 import { CreateCustomerRequest } from '../dto/create-customer.dto';
 import { CustomerEntity } from '../../domain/entity/customer.entity';
 import { BadRequestException } from '@nestjs/common';
+import { RepositoryEnum } from '../../../../module/shared/enum/repository.enum';
+import { FindCustomerResponse } from '../dto/find-customer.dto';
 
 describe('CustomerService', () => {
   let customerService: CustomerService;
@@ -14,14 +16,21 @@ describe('CustomerService', () => {
       providers: [
         CustomerService,
         {
-          provide: 'ICustomerRepository',
-          useValue: { create: jest.fn(), findOneByEmail: jest.fn() },
+          provide: RepositoryEnum.CUSTOMER,
+          useValue: {
+            create: jest.fn(),
+            findOneByEmail: jest.fn(),
+            findOneById: jest.fn(),
+            findAll: jest.fn(),
+          },
         },
       ],
     }).compile();
 
     customerService = module.get<CustomerService>(CustomerService);
-    customerRepository = module.get<ICustomerRepository>('ICustomerRepository');
+    customerRepository = module.get<ICustomerRepository>(
+      RepositoryEnum.CUSTOMER,
+    );
   });
 
   describe('create', () => {
@@ -58,6 +67,64 @@ describe('CustomerService', () => {
       expect(customerRepository.create).toHaveBeenCalledWith(
         expect.objectContaining({ name: dto.name, email: dto.email }),
       );
+    });
+  });
+
+  describe('find', () => {
+    it('should return an empty array if customers not found', async () => {
+      (customerRepository.findAll as jest.Mock).mockResolvedValue([]);
+
+      const result = await customerService.findAll();
+
+      expect(result).toEqual({ data: [] } as FindCustomerResponse);
+      expect(result.data.length).toEqual(0);
+    });
+    it('should find customers', async () => {
+      const customer = new CustomerEntity({
+        name: 'John Doe',
+        email: 'johndoe@email.com',
+      });
+
+      const customer2 = new CustomerEntity({
+        name: 'Jane Doe',
+        email: 'janedoe@email.com',
+      });
+
+      const customers = [customer, customer2];
+
+      (customerRepository.findAll as jest.Mock).mockResolvedValue(customers);
+
+      const result = await customerService.findAll();
+
+      expect(result).toEqual({ data: customers } as FindCustomerResponse);
+      expect(result.data.length).toEqual(2);
+    });
+  });
+
+  describe('findOneById', () => {
+    it('should return null if customers not found', async () => {
+      const id = '1';
+
+      (customerRepository.findOneById as jest.Mock).mockResolvedValue(null);
+
+      const result = await customerService.findOneById(id);
+
+      expect(result).toBeNull();
+    });
+    it('should find customer by id', async () => {
+      const id = '1';
+
+      const customer = new CustomerEntity({
+        id,
+        name: 'John Doe',
+        email: 'johndoe@email.com',
+      });
+
+      (customerRepository.findOneById as jest.Mock).mockResolvedValue(customer);
+
+      const result = await customerService.findOneById(id);
+
+      expect(result).toEqual(customer);
     });
   });
 });

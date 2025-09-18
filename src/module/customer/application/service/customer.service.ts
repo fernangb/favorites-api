@@ -25,8 +25,8 @@ export class CustomerService {
     return this.repository.create(customer);
   }
 
-  async find(): Promise<FindCustomerResponse> {
-    const response = await this.repository.find();
+  async findAll(): Promise<FindCustomerResponse> {
+    const response = await this.repository.findAll();
 
     return { data: response };
   }

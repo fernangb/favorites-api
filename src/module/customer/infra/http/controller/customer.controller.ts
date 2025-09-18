@@ -8,6 +8,8 @@ import {
 } from '@nestjs/swagger';
 import { CreateCustomerRequest } from '../../../application/dto/create-customer.dto';
 import { DefaultErrorResponse } from '../../../../shared/error/default.error';
+import { FindCustomerResponse } from '../../../../../module/customer/application/dto/find-customer.dto';
+import { CustomerEntity } from '../../../../../module/customer/domain/entity/customer.entity';
 
 @Controller('customers')
 @ApiTags('Customers')
@@ -40,7 +42,7 @@ export class CustomerController {
     description: 'Some data is invalid',
     type: DefaultErrorResponse,
   })
-  async findOneById(@Param('id') id: string) {
+  async findOneById(@Param('id') id: string): Promise<CustomerEntity> {
     return this.service.findOneById(id);
   }
 
@@ -54,7 +56,7 @@ export class CustomerController {
     description: 'Some data is invalid',
     type: DefaultErrorResponse,
   })
-  async find() {
-    return this.service.find();
+  async findAll(): Promise<FindCustomerResponse> {
+    return this.service.findAll();
   }
 }

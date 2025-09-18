@@ -43,4 +43,19 @@ describe('TypeOrmCustomerMapper', () => {
       expect(model).toEqual(customerModel);
     });
   });
+
+  describe('toEntityList', () => {
+    it('should return an empty array if list is empty', () => {
+      const list = TypeOrmCustomerMapper.toEntityList([]);
+      expect(list).toEqual([]);
+    });
+
+    it('should map a list of models to entities', () => {
+      const models = [customerModel];
+
+      const list = TypeOrmCustomerMapper.toEntityList(models);
+      expect(list).toHaveLength(1);
+      expect(list[0]).toBeInstanceOf(CustomerEntity);
+    });
+  });
 });

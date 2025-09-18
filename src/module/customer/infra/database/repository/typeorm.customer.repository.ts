@@ -28,7 +28,7 @@ export class TypeOrmCustomerRepository implements ICustomerRepository {
 
     return TypeOrmCustomerMapper.toEntity(model);  }
 
-  async find(): Promise<CustomerEntity[]> {
+  async findAll(): Promise<CustomerEntity[]> {
     const models = await this.repository.find();
 
     return TypeOrmCustomerMapper.toEntityList(models);
