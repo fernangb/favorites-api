@@ -5,4 +5,5 @@ export interface ICustomerRepository {
   findOneByEmail(email: string): Promise<CustomerEntity>;
   findOneById(id: string): Promise<CustomerEntity>;
   findAll(): Promise<CustomerEntity[]>;
+  update(customer: CustomerEntity): Promise<void>;
 }

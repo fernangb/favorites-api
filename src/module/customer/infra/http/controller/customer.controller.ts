@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { CustomerService } from '../../../application/service/customer.service';
 import {
   ApiBadRequestResponse,
@@ -10,6 +10,7 @@ import { CreateCustomerRequest } from '../../../application/dto/create-customer.
 import { DefaultErrorResponse } from '../../../../shared/error/default.error';
 import { FindCustomerResponse } from '../../../../../module/customer/application/dto/find-customer.dto';
 import { CustomerEntity } from '../../../../../module/customer/domain/entity/customer.entity';
+import { UpdateCustomerRequest } from 'src/module/customer/application/dto/update-customer.dto';
 
 @Controller('customers')
 @ApiTags('Customers')
@@ -58,5 +59,22 @@ export class CustomerController {
   })
   async findAll(): Promise<FindCustomerResponse> {
     return this.service.findAll();
+  }
+
+  @ApiOperation({ summary: 'Update customer by id' })
+  @ApiResponse({
+    status: 200,
+    description: 'Customer updated',
+  })
+  @ApiBadRequestResponse({
+    description: 'Some data is invalid',
+    type: DefaultErrorResponse,
+  })
+  @Put(':id')
+  async update(
+    @Param('id') id: string,
+    @Body() dto: UpdateCustomerRequest,
+  ): Promise<void> {
+    return this.service.update(id, dto);
   }
 }
