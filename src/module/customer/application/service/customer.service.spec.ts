@@ -23,6 +23,7 @@ describe('CustomerService', () => {
             findOneById: jest.fn(),
             findAll: jest.fn(),
             update: jest.fn(),
+            delete: jest.fn(),
           },
         },
       ],
@@ -165,6 +166,36 @@ describe('CustomerService', () => {
       expect(customerRepository.update).toHaveBeenCalledWith(
         expect.objectContaining({ name: dto.name, email: dto.email }),
       );
+    });
+  });
+
+  describe('delete', () => {
+    it('should not delete a customer if not exists', async () => {
+      const id = '123';
+
+      (customerRepository.findOneById as jest.Mock).mockResolvedValue(null);
+
+      await expect(customerService.delete(id)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it('should delete a customer', async () => {
+      const id = '123';
+
+      const customer = new CustomerEntity({
+        id,
+        name: 'John Doe',
+        email: 'johndoe@email.com',
+      });
+
+      (customerRepository.findOneById as jest.Mock).mockResolvedValue({
+        customer,
+      });
+
+      await customerService.delete(id);
+
+      expect(customerRepository.delete).toHaveBeenCalledWith(id);
     });
   });
 });

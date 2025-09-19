@@ -207,4 +207,35 @@ describe('TypeOrmCustomerRepository (integration)', () => {
     });
   });
 
+  describe('delete', () => {
+    it('should delete a customer', async () => {
+      const now = new Date();
+      const id = '1';
+
+      const customer = new CustomerEntity({
+        id,
+        name: 'John Doe',
+        email: 'johndoe@email.com',
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      await typeOrmRepository.save(typeOrmRepository.create({
+        id: customer.id,
+        name: customer.name,
+        email: customer.email,
+        createdAt: customer.createdAt,
+        updatedAt: customer.updatedAt
+      }));
+
+       const oldCustomer = await customerRepository.findOneById(id);
+       expect(oldCustomer.name).toBe(customer.name);
+       expect(oldCustomer.email).toBe(customer.email);
+
+      await customerRepository.delete(id);
+
+      const newCustomer = await customerRepository.findOneById(id);
+      expect(newCustomer).toBeNull();
+    });
+  });
 });
