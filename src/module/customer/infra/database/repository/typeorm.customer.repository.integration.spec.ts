@@ -129,7 +129,7 @@ describe('TypeOrmCustomerRepository (integration)', () => {
     });
   });
 
-    describe('findAll', () => {
+  describe('findAll', () => {
     it('should not find a customer by if not exists', async () => {
       const result = await customerRepository.findAll();
       expect(result).toEqual([]);
@@ -161,4 +161,50 @@ describe('TypeOrmCustomerRepository (integration)', () => {
       expect(result[0]).toBeInstanceOf(CustomerEntity);
     });
   });
+
+   describe('update', () => {
+    it('should update a customer', async () => {
+      const now = new Date();
+      const id = '1';
+
+      const customer = new CustomerEntity({
+        id,
+        name: 'John Doe',
+        email: 'johndoe@email.com',
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      await typeOrmRepository.save(typeOrmRepository.create({
+        id: customer.id,
+        name: customer.name,
+        email: customer.email,
+        createdAt: customer.createdAt,
+        updatedAt: customer.updatedAt
+      }));
+
+       const oldCustomer = await customerRepository.findOneById(id);
+       expect(oldCustomer.name).toBe(customer.name);
+       expect(oldCustomer.email).toBe(customer.email);
+
+      const updatedCustomer = new CustomerEntity({
+        id,
+        name: 'John John',
+        email: 'johnjohn@email.com',
+        createdAt: now,
+        updatedAt: new Date(),
+      });
+
+      await customerRepository.update(updatedCustomer);
+
+      const newCustomer = await customerRepository.findOneById(id);
+      expect(newCustomer.name).toBe(updatedCustomer.name);
+      expect(newCustomer.email).toBe(updatedCustomer.email);
+      
+      expect(oldCustomer.id).toBe(newCustomer.id);
+      expect(oldCustomer.name).not.toBe(newCustomer.name);
+      expect(oldCustomer.email).not.toBe(newCustomer.email);
+    });
+  });
+
 });

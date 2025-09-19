@@ -22,6 +22,7 @@ describe('CustomerService', () => {
             findOneByEmail: jest.fn(),
             findOneById: jest.fn(),
             findAll: jest.fn(),
+            update: jest.fn(),
           },
         },
       ],
@@ -125,6 +126,45 @@ describe('CustomerService', () => {
       const result = await customerService.findOneById(id);
 
       expect(result).toEqual(customer);
+    });
+  });
+  describe('update', () => {
+    it('should not update a customer if not exists', async () => {
+      const id = '123';
+      const dto = {
+        name: 'John John',
+        email: 'johnjohn@email.com',
+      };
+
+      (customerRepository.findOneById as jest.Mock).mockResolvedValue(null);
+
+      await expect(customerService.update(id, dto)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it('should update a customer', async () => {
+      const id = '123';
+      const dto = {
+        name: 'John John',
+        email: 'johnjohn@email.com',
+      };
+
+      const customer = new CustomerEntity({
+        id,
+        name: 'John Doe',
+        email: 'johndoe@email.com',
+      });
+
+      (customerRepository.findOneById as jest.Mock).mockResolvedValue({
+        customer,
+      });
+
+      await customerService.update(id, dto);
+
+      expect(customerRepository.update).toHaveBeenCalledWith(
+        expect.objectContaining({ name: dto.name, email: dto.email }),
+      );
     });
   });
 });

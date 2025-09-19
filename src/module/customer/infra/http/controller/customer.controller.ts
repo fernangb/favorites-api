@@ -10,7 +10,7 @@ import { CreateCustomerRequest } from '../../../application/dto/create-customer.
 import { DefaultErrorResponse } from '../../../../shared/error/default.error';
 import { FindCustomerResponse } from '../../../../../module/customer/application/dto/find-customer.dto';
 import { CustomerEntity } from '../../../../../module/customer/domain/entity/customer.entity';
-import { UpdateCustomerRequest } from 'src/module/customer/application/dto/update-customer.dto';
+import { UpdateCustomerRequest } from '../../../../../module/customer/application/dto/update-customer.dto';
 
 @Controller('customers')
 @ApiTags('Customers')

@@ -125,4 +125,36 @@ describe('CustomerController (e2e)', () => {
       expect(spyService).toHaveBeenCalled();
     });
   });
+
+  describe('update', () => {
+    it('/customers/:id (PUT) - should update a customer', async () => {
+      const id = uuid();
+      const dto = {
+        name: 'John John',
+        email: 'johnjohn@email.com',
+      };
+
+      await customerRepository.save({
+        id,
+        name: 'John Doe',
+        email: 'john@example.com',
+      });
+
+      const spyService = jest.spyOn(service, 'update');
+
+      await request(app.getHttpServer())
+        .put(`/customers/${id}`)
+        .send(dto)
+        .expect(200);
+
+      expect(spyService).toHaveBeenCalledTimes(1);
+      expect(spyService).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          name: dto.name,
+          email: dto.email,
+        }),
+      );
+    });
+  });
 });
