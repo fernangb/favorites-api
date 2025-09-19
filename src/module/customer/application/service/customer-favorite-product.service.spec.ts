@@ -9,6 +9,7 @@ import { ServiceEnum } from '../../../../module/shared/enum/service.enum';
 import { CustomerEntity } from '../../domain/entity/customer.entity';
 import { ProductEntity } from '../../../../module/product/domain/entity/product.entity';
 import { CustomerFavoriteProductEntity } from '../../domain/entity/customer-favorite-product.entity';
+import { FindCustomerFavoriteProductResponse } from '../dto/find-customer-favorite-products.dto';
 
 describe('CustomerFavoriteProductService', () => {
   let customerFavoriteProductService: CustomerFavoriteProductService;
@@ -43,6 +44,7 @@ describe('CustomerFavoriteProductService', () => {
           provide: ServiceEnum.PRODUCT,
           useValue: {
             findOneById: jest.fn(),
+            find: jest.fn(),
           },
         },
       ],
@@ -208,6 +210,81 @@ describe('CustomerFavoriteProductService', () => {
         customerFavoriteProductRepository.findByCustomerId,
       ).toHaveBeenCalled();
       expect(customerFavoriteProductRepository.create).toHaveBeenCalled();
+    });
+  });
+
+  describe('findByCustomerId', () => {
+    it('should throw bad request if customer not exists', async () => {
+      const customerId = '1';
+      (customerService.findOneById as jest.Mock).mockResolvedValue(undefined);
+
+      jest.spyOn(customerService, 'findOneById');
+      jest.spyOn(customerFavoriteProductRepository, 'findByCustomerId');
+      jest.spyOn(productService, 'find');
+
+      await expect(
+        customerFavoriteProductService.findByCustomerId(customerId),
+      ).rejects.toThrow(BadRequestException);
+
+      expect(customerService.findOneById).toHaveBeenCalled();
+      expect(
+        customerFavoriteProductRepository.findByCustomerId,
+      ).not.toHaveBeenCalled();
+      expect(productService.find).not.toHaveBeenCalled();
+    });
+
+    it('should find customer favorite products', async () => {
+      const customerId = '1';
+
+      const customer = new CustomerEntity({
+        id: customerId,
+        name: 'John Doe',
+        email: 'johndoe@email.com',
+      });
+
+      const product = new ProductEntity({
+        id: '123',
+        brand: 'Fake brand',
+        image: 'image_url',
+        price: 10,
+        title: 'Fake product',
+        reviewScore: 4.7,
+      });
+
+      const favorite = new CustomerFavoriteProductEntity({
+        id: '1234',
+        customer,
+        productId: product.id,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+      const mockResponse = {
+        data: {
+          customer,
+          products: [product],
+        },
+      } as FindCustomerFavoriteProductResponse;
+
+      (customerService.findOneById as jest.Mock).mockResolvedValue(customer);
+      (productService.find as jest.Mock).mockResolvedValue([product]);
+      (
+        customerFavoriteProductRepository.findByCustomerId as jest.Mock
+      ).mockResolvedValue([favorite]);
+
+      jest.spyOn(customerService, 'findOneById');
+      jest.spyOn(customerFavoriteProductRepository, 'findByCustomerId');
+      jest.spyOn(productService, 'find');
+
+      const response =
+        await customerFavoriteProductService.findByCustomerId(customerId);
+
+      expect(response.data).toStrictEqual(mockResponse.data);
+
+      expect(customerService.findOneById).toHaveBeenCalled();
+      expect(
+        customerFavoriteProductRepository.findByCustomerId,
+      ).toHaveBeenCalled();
+      expect(productService.find).toHaveBeenCalled();
     });
   });
 });

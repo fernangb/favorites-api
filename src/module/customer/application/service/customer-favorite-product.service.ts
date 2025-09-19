@@ -6,6 +6,7 @@ import { CustomerService } from './customer.service';
 import { TypeOrmCustomerFavoriteProductRepository } from '../../infra/database/repository/typeorm.customer-favorite-product.repository';
 import { IProductService } from '../../../../module/product/domain/service/product.service';
 import { ServiceEnum } from '../../../../module/shared/enum/service.enum';
+import { FindCustomerFavoriteProductResponse } from '../dto/find-customer-favorite-products.dto';
 
 @Injectable()
 export class CustomerFavoriteProductService {
@@ -46,4 +47,26 @@ export class CustomerFavoriteProductService {
 
     return this.repository.create(favorite);
   }
+
+  async findByCustomerId(customerId: string): Promise<FindCustomerFavoriteProductResponse>{
+    const customer = await this.customerService.findOneById(customerId);
+
+    if (!customer) throw new BadRequestException('Customer not exists');
+
+    const favorites = await this.repository.findByCustomerId(customerId);
+
+    const favoritesIds = favorites.map(favorite => favorite.productId);
+
+    const products = await this.productService.find();
+
+    const favoriteProducts = products.filter(product => favoritesIds.includes(product.id));
+
+    return {
+      data: {
+        customer,
+        products: favoriteProducts
+      }
+    }
+  }
+
 }

@@ -77,13 +77,15 @@ describe('TypeOrmProductRepository (integration)', () => {
   describe('find', () => {
     it('should not find a product by if not exists', async () => {
       const page = 1;
-      const result = await productRepository.find(page);
+      const limit = 10;
+      const result = await productRepository.find(page, limit);
       expect(result).toEqual([]);
     });
 
     it('should find all products', async () => {
       const id = '1';
       const page = 1;
+      const limit = 10;
 
       const product = new ProductEntity({
         id,
@@ -105,7 +107,7 @@ describe('TypeOrmProductRepository (integration)', () => {
         }),
       );
 
-      const result = await productRepository.find(page);
+      const result = await productRepository.find(page, limit);
 
       expect(result.length).toBe(1);
       expect(result[0]).toBeInstanceOf(ProductEntity);
