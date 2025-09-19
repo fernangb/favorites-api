@@ -11,7 +11,7 @@ import { TypeOrmCustomerModel } from '../../database/model/typeorm.customer.mode
 import { CustomerEntity } from '../../../../../module/customer/domain/entity/customer.entity';
 import { ProductEntity } from '../../../../../module/product/domain/entity/product.entity';
 import { TypeOrmProductModel } from '../../../../../module/product/infra/database/model/typeorm.product.model';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuid } from 'uuid';
 
 describe('CustomerFavoriteProductController (e2e)', () => {
   let app: INestApplication;
@@ -71,8 +71,8 @@ describe('CustomerFavoriteProductController (e2e)', () => {
   describe('add', () => {
     it('POST /customers/favorites - should add a customer favorite product', async () => {
       const dto = {
-        customerId: uuidv4(),
-        productId: uuidv4(),
+        customerId: uuid(),
+        productId: uuid(),
       };
 
       const customerModel = {
@@ -128,6 +128,55 @@ describe('CustomerFavoriteProductController (e2e)', () => {
         .post('/customers')
         .send({ customerId: '1' })
         .expect(400);
+    });
+  });
+
+  describe('findByCustomerId', () => {
+    it('/customers/favorites/:id (GET) - should find customer favorite products', async () => {
+      const customerModel = {
+        id: uuid(),
+        name: 'John Doe',
+        email: 'johndoe@email.com',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as TypeOrmCustomerModel;
+
+      const productModel = {
+        id: uuid(),
+        brand: 'Fake brand',
+        image: 'fake image',
+        price: 10,
+        title: 'Fake Title',
+        reviewScore: 5,
+      } as TypeOrmProductModel;
+
+      const favoriteModel = {
+        id: uuid(),
+        customer: customerModel,
+        customerId: customerModel.id,
+        productId: productModel.id,
+      } as TypeOrmCustomerFavoriteProductModel;
+
+      await customerRepository.save(
+        await customerRepository.create(customerModel),
+      );
+
+      await productRepository.save(
+        await productRepository.create(productModel),
+      );
+
+      await customerFavoriteProductRepository.save(
+        await customerFavoriteProductRepository.create(favoriteModel),
+      );
+
+      const spyService = jest.spyOn(service, 'findByCustomerId');
+
+      const response = await request(app.getHttpServer())
+        .get(`/customers/favorites/${customerModel.id}`)
+        .expect(200);
+
+      expect(response.body.data.products.length).toBe(1);
+      expect(spyService).toHaveBeenCalled();
     });
   });
 });
