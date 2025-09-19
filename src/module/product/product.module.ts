@@ -5,10 +5,11 @@ import { TypeOrmProductModel } from './infra/database/model/typeorm.product.mode
 import { ProductService } from './application/service/product.service';
 import { TypeOrmProductRepository } from './infra/database/repository/typeorm.product.repository';
 import { ServiceEnum } from '../shared/enum/service.enum';
+import { ProductController } from './infra/http/controller/product.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([TypeOrmProductModel])],
-  controllers: [],
+  controllers: [ProductController],
   providers: [
     ProductService,
     {

@@ -14,7 +14,10 @@ export class ProductService implements IProductService {
     return this.repository.findOneById(id);
   }
 
-  async find(page: number = 1): Promise<FindProductByIdResponse[]> {
-    return this.repository.find(page);
+  async find(
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<FindProductByIdResponse[]> {
+    return this.repository.find(page, limit);
   }
 }

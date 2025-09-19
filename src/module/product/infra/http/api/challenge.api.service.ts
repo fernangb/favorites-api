@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
-import { FindProductByIdResponse } from '../../application/dto/find-product-by-id.dto';
-import { IProductService } from '../../domain/service/product.service';
+import { FindProductByIdResponse } from '../../../application/dto/find-product-by-id.dto';
+import { IProductService } from '../../../domain/service/product.service';
 
 @Injectable()
 export class ChallengeAPIService implements IProductService {

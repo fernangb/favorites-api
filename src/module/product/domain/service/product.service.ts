@@ -2,5 +2,5 @@ import { FindProductByIdResponse } from '../../application/dto/find-product-by-i
 
 export interface IProductService {
   findOneById(id: string): Promise<FindProductByIdResponse>;
-  find(page: number): Promise<FindProductByIdResponse[]>;
+  find(page?: number, limit?: number): Promise<FindProductByIdResponse[]>;
 }
