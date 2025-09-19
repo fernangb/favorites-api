@@ -19,12 +19,6 @@ export class TypeOrmCustomerFavoriteProductRepository
     await this.repository.save(this.repository.create(model));
   }
 
-  async findOneById(id: string): Promise<CustomerFavoriteProductEntity> {
-    const model = await this.repository.findOne({ where: { id } });
-
-    return TypeOrmCustomerFavoriteProductMapper.toEntity(model);
-  }
-
   async findByCustomerId(
     customerId: string,
   ): Promise<CustomerFavoriteProductEntity[]> {

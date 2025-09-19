@@ -11,9 +11,12 @@ export class TypeOrmProductRepository implements IProductRepository {
     private repository: Repository<TypeOrmProductModel>,
   ) {}
 
-  async find(page: number): Promise<ProductEntity[]> {
-    const models = await this.repository.find();
-
+  async find(page: number, limit = 10): Promise<ProductEntity[]> {
+    const [models] = await this.repository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+      order: { id: 'DESC' },
+    });
     return TypeOrmProductMapper.toEntityList(models);
   }
 

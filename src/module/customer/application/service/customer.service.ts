@@ -29,7 +29,7 @@ export class CustomerService {
   async findAll(): Promise<FindCustomerResponse> {
     const response = await this.repository.findAll();
 
-    return { data: response };
+    return { data: response } as FindCustomerResponse;
   }
 
   async findOneById(id: string): Promise<CustomerEntity> {
