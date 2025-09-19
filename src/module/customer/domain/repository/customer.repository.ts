@@ -6,4 +6,5 @@ export interface ICustomerRepository {
   findOneById(id: string): Promise<CustomerEntity>;
   findAll(): Promise<CustomerEntity[]>;
   update(customer: CustomerEntity): Promise<void>;
+  delete(id: string): Promise<void>;
 }
