@@ -25,6 +25,7 @@ API para gerenciar os produtos favoritos dos clientes.
 - Buscar clientes
 - Buscar cliente por id
 - Atualizar cliente
+- Excluir cliente
 </details>
 
 ---

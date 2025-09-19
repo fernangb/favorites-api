@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { CustomerService } from '../../../application/service/customer.service';
 import {
   ApiBadRequestResponse,
@@ -76,5 +84,19 @@ export class CustomerController {
     @Body() dto: UpdateCustomerRequest,
   ): Promise<void> {
     return this.service.update(id, dto);
+  }
+
+  @ApiOperation({ summary: 'Delete customer by id' })
+  @ApiResponse({
+    status: 200,
+    description: 'Customer deleted',
+  })
+  @ApiBadRequestResponse({
+    description: 'Some data is invalid',
+    type: DefaultErrorResponse,
+  })
+  @Delete(':id')
+  async delete(@Param('id') id: string): Promise<void> {
+    return this.service.delete(id);
   }
 }

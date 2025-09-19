@@ -157,4 +157,23 @@ describe('CustomerController (e2e)', () => {
       );
     });
   });
+
+  describe('delete', () => {
+    it('/customers/:id (DELETE) - should delete a customer', async () => {
+      const id = uuid();
+
+      await customerRepository.save({
+        id,
+        name: 'John Doe',
+        email: 'john@example.com',
+      });
+
+      const spyService = jest.spyOn(service, 'delete');
+
+      await request(app.getHttpServer()).delete(`/customers/${id}`).expect(200);
+
+      expect(spyService).toHaveBeenCalledTimes(1);
+      expect(spyService).toHaveBeenCalledWith(expect.any(String));
+    });
+  });
 });

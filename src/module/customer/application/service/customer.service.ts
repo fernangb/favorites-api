@@ -54,4 +54,12 @@ export class CustomerService {
 
     await this.repository.update(customer);
   }
+
+  async delete(id: string): Promise<void> {
+    const hasCustomer = await this.repository.findOneById(id);
+
+    if (!hasCustomer) throw new BadRequestException('Customer not found');
+
+    await this.repository.delete(id);
+  }
 }
