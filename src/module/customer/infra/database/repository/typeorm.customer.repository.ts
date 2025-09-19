@@ -33,4 +33,10 @@ export class TypeOrmCustomerRepository implements ICustomerRepository {
 
     return TypeOrmCustomerMapper.toEntityList(models);
   }
+
+    async update(customer: CustomerEntity): Promise<void> {
+    const model = TypeOrmCustomerMapper.toModel(customer);
+
+    await this.repository.save(model);
+  }
 }

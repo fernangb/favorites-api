@@ -4,6 +4,7 @@ import { CustomerEntity } from '../../domain/entity/customer.entity';
 import { TypeOrmCustomerRepository } from '../../infra/database/repository/typeorm.customer.repository';
 import { RepositoryEnum } from '../../../../module/shared/enum/repository.enum';
 import { FindCustomerResponse } from '../dto/find-customer.dto';
+import { UpdateCustomerRequest } from '../dto/update-customer.dto';
 
 @Injectable()
 export class CustomerService {
@@ -33,5 +34,24 @@ export class CustomerService {
 
   async findOneById(id: string): Promise<CustomerEntity> {
     return this.repository.findOneById(id);
+  }
+
+  async update(
+    id: string,
+    { name, email }: UpdateCustomerRequest,
+  ): Promise<void> {
+    const hasCustomer = await this.repository.findOneById(id);
+
+    if (!hasCustomer) throw new BadRequestException('Customer not found');
+
+    const customer = new CustomerEntity({
+      id,
+      name,
+      email,
+      createdAt: hasCustomer.createdAt,
+      updatedAt: new Date(),
+    });
+
+    await this.repository.update(customer);
   }
 }
