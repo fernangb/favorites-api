@@ -46,6 +46,8 @@ export class ProductController {
     @Query() query: FindProductRequest,
   ): Promise<FindProductResponse[]> {
     const { page, limit } = query;
-    return this.service.find(page, limit);
+    const a = await this.service.find(page, limit);
+    console.log(a);
+    return a;
   }
 }
