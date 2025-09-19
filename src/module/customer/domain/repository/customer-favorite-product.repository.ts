@@ -5,4 +5,9 @@ export interface ICustomerFavoriteProductRepository {
   findByCustomerId(
     customerId: string,
   ): Promise<CustomerFavoriteProductEntity[]>;
+  findByItem(
+    customerId: string,
+    productId: string,
+  ): Promise<CustomerFavoriteProductEntity>;
+  delete(customerId: string, productId: string): Promise<void>;
 }

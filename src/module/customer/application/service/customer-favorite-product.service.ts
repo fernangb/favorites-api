@@ -69,4 +69,19 @@ export class CustomerFavoriteProductService {
     }
   }
 
+    async delete(customerId: string, productId: string): Promise<void> {
+      const hasCustomer = await this.customerService.findOneById(customerId);
+  
+      if (!hasCustomer) throw new BadRequestException('Customer not found');
+
+      const product = await this.productService.findOneById(productId);
+
+      if (!product) throw new BadRequestException('Product not exists');
+
+      const favorite = await this.repository.findByItem(customerId, productId);
+
+      if (!favorite) throw new BadRequestException('Product is not favorite');
+  
+      await this.repository.delete(customerId, productId);
+    }
 }

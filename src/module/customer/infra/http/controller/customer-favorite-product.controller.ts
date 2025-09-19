@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiOperation,
@@ -8,7 +8,7 @@ import {
 import { DefaultErrorResponse } from '../../../../shared/error/default.error';
 import { CustomerFavoriteProductService } from '../../../../../module/customer/application/service/customer-favorite-product.service';
 import { AddCustomerFavoriteProductRequest } from '../../../../../module/customer/application/dto/add-customer-favorite-product.dto';
-import { FindCustomerFavoriteProductResponse } from 'src/module/customer/application/dto/find-customer-favorite-products.dto';
+import { FindCustomerFavoriteProductResponse } from '../../../../../module/customer/application/dto/find-customer-favorite-products.dto';
 
 @Controller('customers')
 @ApiTags('Customers')
@@ -43,5 +43,22 @@ export class CustomerFavoriteProductController {
     @Param('id') id: string,
   ): Promise<FindCustomerFavoriteProductResponse> {
     return this.service.findByCustomerId(id);
+  }
+
+  @ApiOperation({ summary: 'Delete customer favorite product' })
+  @ApiResponse({
+    status: 200,
+    description: 'Favorite product deleted',
+  })
+  @ApiBadRequestResponse({
+    description: 'Some data is invalid',
+    type: DefaultErrorResponse,
+  })
+  @Delete('/favorites/:customerId/:productId')
+  async delete(
+    @Param('customerId') customerId: string,
+    @Param('productId') productId: string,
+  ): Promise<void> {
+    return this.service.delete(customerId, productId);
   }
 }

@@ -28,6 +28,7 @@ API para gerenciar os produtos favoritos dos clientes.
 - Excluir cliente
 - Adicionar produto favorito do cliente
 - Listar produtos favoritos do cliente
+- Remover um produto da lista de favoritos do cliente
 </details>
 
 **Produtos**

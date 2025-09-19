@@ -26,4 +26,22 @@ export class TypeOrmCustomerFavoriteProductRepository
 
     return TypeOrmCustomerFavoriteProductMapper.toEntityList(models);
   }
+
+  async findByItem(
+    customerId: string,
+    productId: string,
+  ): Promise<CustomerFavoriteProductEntity> {
+    const model = await this.repository.findOne({
+      where: { customerId, productId },
+    });
+
+    return TypeOrmCustomerFavoriteProductMapper.toEntity(model);
+  }
+
+  async delete(customerId: string, productId: string): Promise<void> {
+    await this.repository.delete({
+      customerId,
+      productId,
+    });
+  }
 }
