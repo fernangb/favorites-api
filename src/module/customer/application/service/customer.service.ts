@@ -36,6 +36,10 @@ export class CustomerService {
     return this.repository.findOneById(id);
   }
 
+  async findOneByEmail(email: string): Promise<CustomerEntity> {
+    return this.repository.findOneByEmail(email);
+  }
+
   async update(
     id: string,
     { name, email }: UpdateCustomerRequest,

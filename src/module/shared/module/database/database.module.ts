@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmCustomerModel } from '../../../../module/customer/infra/database/model/typeorm.customer.model';
 import { TypeOrmProductModel } from '../../../catalog/infra/database/model/typeorm.product.model';
 import { TypeOrmFavoriteModel } from '../../../favorite/infra/database/model/typeorm.favorite.model';
+import { TypeOrmIdentityModel } from '../../../identity/infra/database/model/typeorm.identity.model';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { TypeOrmFavoriteModel } from '../../../favorite/infra/database/model/typ
         TypeOrmCustomerModel,
         TypeOrmFavoriteModel,
         TypeOrmProductModel,
+        TypeOrmIdentityModel,
       ],
       synchronize: true,
     }),
