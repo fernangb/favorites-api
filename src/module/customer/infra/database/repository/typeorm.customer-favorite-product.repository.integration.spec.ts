@@ -144,4 +144,187 @@ describe('TypeOrmCustomerRepository (integration)', () => {
       expect(result[0].productId).toBe(productId);
     });
   });
+
+  describe('findByItem', () => {
+    it('should not find a customer favorite product item', async () => {
+      const customerId = '123';
+      const productId = '123';
+      const result = await customerFavoriteProductRepository.findByItem(
+        customerId,
+        productId,
+      );
+
+      expect(result).toBeNull();
+    });
+
+    it('should not find customer favorite product item if product is not a favorite', async () => {
+      const id = '1';
+      const customerId = '123';
+      const productId = '12345';
+      const productId2 = '123456';
+
+      const customerEntity = new CustomerEntity({
+        id: customerId,
+        name: 'John Doe',
+        email: 'johndoe@email.com',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      await typeOrmCustomerRepository.save(customerEntity);
+
+      const favorite = new CustomerFavoriteProductEntity({
+        id,
+        customer: customerEntity,
+        productId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      await typeOrmRepository.save(
+        typeOrmRepository.create({
+          id: favorite.id,
+          customer: favorite.customer,
+          productId: favorite.productId,
+        }),
+      );
+
+      const result = await customerFavoriteProductRepository.findByItem(
+        customerId,
+        productId2,
+      );
+      expect(result).toBeNull();
+    });
+
+    it('should find customer favorite product item', async () => {
+      const id = '1';
+      const customerId = '123';
+      const productId = '12345';
+
+      const customerEntity = new CustomerEntity({
+        id: customerId,
+        name: 'John Doe',
+        email: 'johndoe@email.com',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      await typeOrmCustomerRepository.save(customerEntity);
+
+      const favorite = new CustomerFavoriteProductEntity({
+        id,
+        customer: customerEntity,
+        productId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      await typeOrmRepository.save(
+        typeOrmRepository.create({
+          id: favorite.id,
+          customer: favorite.customer,
+          productId: favorite.productId,
+        }),
+      );
+
+      const result = await customerFavoriteProductRepository.findByItem(
+        customerId,
+        productId,
+      );
+      expect(result).toBeInstanceOf(CustomerFavoriteProductEntity);
+      expect(result.customer.id).toBe(customerId);
+      expect(result.productId).toBe(productId);
+    });
+  });
+
+  describe('delete', () => {
+    it('should not delete a customer favorite product if product is not a favorite', async () => {
+      const id = '1';
+      const customerId = '123';
+      const productId = '12345';
+      const productId2 = '123456';
+
+      const customerEntity = new CustomerEntity({
+        id: customerId,
+        name: 'John Doe',
+        email: 'johndoe@email.com',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      await typeOrmCustomerRepository.save(customerEntity);
+
+      const favorite = new CustomerFavoriteProductEntity({
+        id,
+        customer: customerEntity,
+        productId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      await typeOrmRepository.save(
+        typeOrmRepository.create({
+          id: favorite.id,
+          customer: favorite.customer,
+          productId: favorite.productId,
+        }),
+      );
+
+      const favoritesBefore =
+        await customerFavoriteProductRepository.findByCustomerId(customerId);
+
+      expect(favoritesBefore.length).toBe(1);
+
+      await customerFavoriteProductRepository.delete(customerId, productId2);
+
+      const favoritesAfter =
+        await customerFavoriteProductRepository.findByCustomerId(customerId);
+
+      expect(favoritesAfter.length).toBe(1);
+    });
+
+    it('should delete a customer favorite product', async () => {
+      const id = '1';
+      const customerId = '123';
+      const productId = '12345';
+
+      const customerEntity = new CustomerEntity({
+        id: customerId,
+        name: 'John Doe',
+        email: 'johndoe@email.com',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      await typeOrmCustomerRepository.save(customerEntity);
+
+      const favorite = new CustomerFavoriteProductEntity({
+        id,
+        customer: customerEntity,
+        productId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      await typeOrmRepository.save(
+        typeOrmRepository.create({
+          id: favorite.id,
+          customer: favorite.customer,
+          productId: favorite.productId,
+        }),
+      );
+
+      const favoritesBefore =
+        await customerFavoriteProductRepository.findByCustomerId(customerId);
+
+      expect(favoritesBefore.length).toBe(1);
+
+      await customerFavoriteProductRepository.delete(customerId, productId);
+
+      const favoritesAfter =
+        await customerFavoriteProductRepository.findByCustomerId(customerId);
+
+      expect(favoritesAfter.length).toBe(0);
+    });
+  });
 });

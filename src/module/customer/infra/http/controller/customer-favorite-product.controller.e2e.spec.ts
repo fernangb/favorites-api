@@ -118,14 +118,14 @@ describe('CustomerFavoriteProductController (e2e)', () => {
 
     it('should return 400 if customerId is not provided', async () => {
       return request(app.getHttpServer())
-        .post('/customers')
+        .post('/customers/favorites')
         .send({ productId: '1' })
         .expect(400);
     });
 
     it('should return 400 if product id is not provided', async () => {
       return request(app.getHttpServer())
-        .post('/customers')
+        .post('/customers/favorites')
         .send({ customerId: '1' })
         .expect(400);
     });
@@ -177,6 +177,57 @@ describe('CustomerFavoriteProductController (e2e)', () => {
 
       expect(response.body.data.products.length).toBe(1);
       expect(spyService).toHaveBeenCalled();
+    });
+  });
+
+  describe('delete', () => {
+    it('/customers/favorites/:customerId/:productId (DELETE) - should delete a customer favorite product', async () => {
+      const customerId = uuid();
+      const productId = uuid();
+
+      const customerModel = {
+        id: customerId,
+        name: 'John Doe',
+        email: 'johndoe@email.com',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as TypeOrmCustomerModel;
+
+      const productModel = {
+        id: productId,
+        brand: 'Fake brand',
+        image: 'fake image',
+        price: 10,
+        title: 'Fake Title',
+        reviewScore: 5,
+      } as TypeOrmProductModel;
+
+      const favoriteModel = {
+        id: uuid(),
+        customer: customerModel,
+        customerId: customerModel.id,
+        productId: productModel.id,
+      } as TypeOrmCustomerFavoriteProductModel;
+
+      await customerRepository.save(
+        await customerRepository.create(customerModel),
+      );
+
+      await productRepository.save(
+        await productRepository.create(productModel),
+      );
+
+      await customerFavoriteProductRepository.save(
+        await customerFavoriteProductRepository.create(favoriteModel),
+      );
+
+      const spyService = jest.spyOn(service, 'delete');
+
+      await request(app.getHttpServer())
+        .delete(`/customers/favorites/${customerId}/${productId}`)
+        .expect(200);
+
+      expect(spyService).toHaveBeenCalledTimes(1);
     });
   });
 });

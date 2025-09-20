@@ -1,4 +1,4 @@
-import { ProductEntity } from '../../../../../module/product/domain/entity/product.entity';
+import { ProductEntity } from '../../../domain/entity/product.entity';
 import { TypeOrmProductModel } from '../model/typeorm.product.model';
 import { TypeOrmProductMapper } from './typeorm.product.mapper';
 

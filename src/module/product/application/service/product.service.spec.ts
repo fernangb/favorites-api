@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { RepositoryEnum } from '../../../../module/shared/enum/repository.enum';
+import { RepositoryEnum } from '../../../shared/enum/repository.enum';
 import { ProductService } from './product.service';
 import { IProductRepository } from '../../domain/repository/product.repository';
 import { ProductEntity } from '../../domain/entity/product.entity';

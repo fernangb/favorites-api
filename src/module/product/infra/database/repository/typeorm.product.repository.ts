@@ -1,7 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { IProductRepository } from '../../../../../module/product/domain/repository/product.repository';
+import { IProductRepository } from '../../../domain/repository/product.repository';
 import { Repository } from 'typeorm';
-import { ProductEntity } from '../../../../../module/product/domain/entity/product.entity';
+import { ProductEntity } from '../../../domain/entity/product.entity';
 import { TypeOrmProductModel } from '../model/typeorm.product.model';
 import { TypeOrmProductMapper } from '../mapper/typeorm.product.mapper';
 

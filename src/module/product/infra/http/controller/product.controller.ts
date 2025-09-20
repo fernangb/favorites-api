@@ -6,12 +6,12 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { DefaultErrorResponse } from '../../../../../module/shared/error/default.error';
-import { FindProductByIdResponse } from '../../../../../module/product/application/dto/find-product-by-id.dto';
+import { DefaultErrorResponse } from '../../../../shared/error/default.error';
+import { FindProductByIdResponse } from '../../../application/dto/find-product-by-id.dto';
 import {
   FindProductRequest,
   FindProductResponse,
-} from '../../../../../module/product/application/dto/find-product.dto';
+} from '../../../application/dto/find-product.dto';
 
 @Controller('products')
 @ApiTags('Products')

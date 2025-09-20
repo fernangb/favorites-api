@@ -38,6 +38,8 @@ describe('CustomerFavoriteProductService', () => {
           useValue: {
             create: jest.fn(),
             findByCustomerId: jest.fn(),
+            findByItem: jest.fn(),
+            delete: jest.fn(),
           },
         },
         {
@@ -285,6 +287,184 @@ describe('CustomerFavoriteProductService', () => {
         customerFavoriteProductRepository.findByCustomerId,
       ).toHaveBeenCalled();
       expect(productService.find).toHaveBeenCalled();
+    });
+  });
+
+  describe('delete', () => {
+    it('should not delete a favorite product if customer not exists', async () => {
+      const customerId = '123';
+      const productId = '123';
+
+      (customerService.findOneById as jest.Mock).mockResolvedValue(null);
+
+      jest.spyOn(customerService, 'findOneById');
+      jest.spyOn(productService, 'findOneById');
+      jest.spyOn(customerFavoriteProductRepository, 'findByItem');
+      jest.spyOn(customerFavoriteProductRepository, 'delete');
+
+      await expect(
+        customerFavoriteProductService.delete(customerId, productId),
+      ).rejects.toThrow(BadRequestException);
+
+      expect(customerService.findOneById).toHaveBeenCalled();
+      expect(productService.findOneById).not.toHaveBeenCalled();
+      expect(
+        customerFavoriteProductRepository.findByItem,
+      ).not.toHaveBeenCalled();
+      expect(customerFavoriteProductRepository.delete).not.toHaveBeenCalled();
+    });
+
+    it('should not delete a favorite product if product not exists', async () => {
+      const customerId = '123';
+      const productId = '123';
+
+      const customer = new CustomerEntity({
+        id: customerId,
+        name: 'John Doe',
+        email: 'johndoe@email.com',
+      });
+
+      (customerService.findOneById as jest.Mock).mockResolvedValue(customer);
+      (productService.findOneById as jest.Mock).mockResolvedValue(null);
+
+      jest.spyOn(customerService, 'findOneById');
+      jest.spyOn(productService, 'findOneById');
+      jest.spyOn(customerFavoriteProductRepository, 'findByItem');
+      jest.spyOn(customerFavoriteProductRepository, 'delete');
+
+      await expect(
+        customerFavoriteProductService.delete(customerId, productId),
+      ).rejects.toThrow(BadRequestException);
+
+      expect(customerService.findOneById).toHaveBeenCalled();
+      expect(productService.findOneById).toHaveBeenCalled();
+      expect(
+        customerFavoriteProductRepository.findByItem,
+      ).not.toHaveBeenCalled();
+      expect(customerFavoriteProductRepository.delete).not.toHaveBeenCalled();
+    });
+
+    it('should not delete a favorite product if product is not a favorite', async () => {
+      const customerId = '123';
+      const productId = '123';
+
+      const customer = new CustomerEntity({
+        id: customerId,
+        name: 'John Doe',
+        email: 'johndoe@email.com',
+      });
+
+      const product = new ProductEntity({
+        id: productId,
+        brand: 'Fake brand',
+        image: 'fake image',
+        price: 10,
+        title: 'Fake title',
+        reviewScore: 5,
+      });
+
+      (customerService.findOneById as jest.Mock).mockResolvedValue(customer);
+      (productService.findOneById as jest.Mock).mockResolvedValue(product);
+      (
+        customerFavoriteProductRepository.findByItem as jest.Mock
+      ).mockResolvedValue(null);
+
+      jest.spyOn(customerService, 'findOneById');
+      jest.spyOn(productService, 'findOneById');
+      jest.spyOn(customerFavoriteProductRepository, 'findByItem');
+      jest.spyOn(customerFavoriteProductRepository, 'delete');
+
+      await expect(
+        customerFavoriteProductService.delete(customerId, productId),
+      ).rejects.toThrow(BadRequestException);
+
+      expect(customerService.findOneById).toHaveBeenCalled();
+      expect(productService.findOneById).toHaveBeenCalled();
+      expect(customerFavoriteProductRepository.findByItem).toHaveBeenCalled();
+      expect(customerFavoriteProductRepository.delete).not.toHaveBeenCalled();
+    });
+
+    it('should not delete a favorite product if product is not a favorite', async () => {
+      const customerId = '123';
+      const productId = '123';
+
+      const customer = new CustomerEntity({
+        id: customerId,
+        name: 'John Doe',
+        email: 'johndoe@email.com',
+      });
+
+      const product = new ProductEntity({
+        id: productId,
+        brand: 'Fake brand',
+        image: 'fake image',
+        price: 10,
+        title: 'Fake title',
+        reviewScore: 5,
+      });
+
+      (customerService.findOneById as jest.Mock).mockResolvedValue(customer);
+      (productService.findOneById as jest.Mock).mockResolvedValue(product);
+      (
+        customerFavoriteProductRepository.findByItem as jest.Mock
+      ).mockResolvedValue(null);
+
+      jest.spyOn(customerService, 'findOneById');
+      jest.spyOn(productService, 'findOneById');
+      jest.spyOn(customerFavoriteProductRepository, 'findByItem');
+      jest.spyOn(customerFavoriteProductRepository, 'delete');
+
+      await expect(
+        customerFavoriteProductService.delete(customerId, productId),
+      ).rejects.toThrow(BadRequestException);
+
+      expect(customerService.findOneById).toHaveBeenCalled();
+      expect(productService.findOneById).toHaveBeenCalled();
+      expect(customerFavoriteProductRepository.findByItem).toHaveBeenCalled();
+      expect(customerFavoriteProductRepository.delete).not.toHaveBeenCalled();
+    });
+
+    it('should delete a favorite product', async () => {
+      const customerId = '123';
+      const productId = '123';
+
+      const customer = new CustomerEntity({
+        id: customerId,
+        name: 'John Doe',
+        email: 'johndoe@email.com',
+      });
+
+      const product = new ProductEntity({
+        id: productId,
+        brand: 'Fake brand',
+        image: 'fake image',
+        price: 10,
+        title: 'Fake title',
+        reviewScore: 5,
+      });
+
+      const favorite = new CustomerFavoriteProductEntity({
+        customer,
+        productId,
+      });
+
+      (customerService.findOneById as jest.Mock).mockResolvedValue(customer);
+      (productService.findOneById as jest.Mock).mockResolvedValue(product);
+      (
+        customerFavoriteProductRepository.findByItem as jest.Mock
+      ).mockResolvedValue(favorite);
+
+      jest.spyOn(customerService, 'findOneById');
+      jest.spyOn(productService, 'findOneById');
+      jest.spyOn(customerFavoriteProductRepository, 'findByItem');
+      jest.spyOn(customerFavoriteProductRepository, 'delete');
+
+      await customerFavoriteProductService.delete(customerId, productId);
+
+      expect(customerService.findOneById).toHaveBeenCalled();
+      expect(productService.findOneById).toHaveBeenCalled();
+      expect(customerFavoriteProductRepository.findByItem).toHaveBeenCalled();
+      expect(customerFavoriteProductRepository.delete).toHaveBeenCalled();
     });
   });
 });

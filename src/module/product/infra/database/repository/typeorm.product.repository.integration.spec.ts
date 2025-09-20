@@ -3,7 +3,7 @@ import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TypeOrmProductRepository } from './typeorm.product.repository';
 import { TypeOrmProductModel } from '../model/typeorm.product.model';
-import { ProductEntity } from '../../../../../module/product/domain/entity/product.entity';
+import { ProductEntity } from '../../../domain/entity/product.entity';
 
 describe('TypeOrmProductRepository (integration)', () => {
   let productRepository: TypeOrmProductRepository;
