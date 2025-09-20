@@ -1,8 +1,8 @@
-import { TypeOrmFavoriteModel } from '../../../../favorite/infra/database/model/typeorm.favorite.model';
-import { TypeOrmCustomerModel } from '../model/typeorm.customer.model';
-import { TypeOrmCustomerMapper } from './typeorm.customer.mapper';
+import { TypeOrmFavoriteModel } from '../model/typeorm.favorite.model';
+import { TypeOrmCustomerModel } from '../../../../customer/infra/database/model/typeorm.customer.model';
+import { TypeOrmCustomerMapper } from '../../../../customer/infra/database/mapper/typeorm.customer.mapper';
+import { TypeOrmFavoriteMapper } from './typeorm.favorite.mapper';
 import { FavoriteEntity } from '../../../../../module/favorite/domain/entity/favorite.entity';
-import { TypeOrmFavoriteMapper } from './typeorm.customer-favorite-product.mapper';
 
 describe('TypeOrmFavoriteMapper', () => {
   const now = new Date();

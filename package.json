@@ -74,16 +74,20 @@
     ],
     "testMatch": [
       "**/*.spec.ts",
-      "**/*.e2e-spec.ts"
+      "**/*.integration.spec.ts",
+      "**/*.e2e.spec.ts"
     ],
     "testPathIgnorePatterns": [
       "/node_modules/",
       "\\.module\\.ts$",
+      "\\.dto\\.ts$",
       "main\\.ts$"
     ],
     "collectCoverageFrom": [
       "src/**/*.ts",
       "!src/**/*.module.ts",
+      "!src/module/**/*.module.ts",
+      "!src/module/**/application/dto/*.dto.ts",
       "!src/main.ts"
     ],
     "coverageDirectory": "coverage",

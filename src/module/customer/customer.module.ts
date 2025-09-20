@@ -5,33 +5,17 @@ import { CustomerController } from './infra/http/controller/customer.controller'
 import { CustomerService } from './application/service/customer.service';
 import { TypeOrmCustomerRepository } from './infra/database/repository/typeorm.customer.repository';
 import { RepositoryEnum } from '../../module/shared/enum/repository.enum';
-import { TypeOrmCustomerFavoriteProductModel } from './infra/database/model/typeorm.customer-favorite-product.model';
-import { CustomerFavoriteProductController } from './infra/http/controller/customer-favorite-product.controller';
-import { CustomerFavoriteProductService } from './application/service/customer-favorite-product.service';
-import { TypeOrmCustomerFavoriteProductRepository } from './infra/database/repository/typeorm.customer-favorite-product.repository';
-import { ProductModule } from '../product/product.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      TypeOrmCustomerModel,
-      TypeOrmCustomerFavoriteProductModel,
-    ]),
-    ProductModule,
-  ],
-  controllers: [CustomerController, CustomerFavoriteProductController],
+  imports: [TypeOrmModule.forFeature([TypeOrmCustomerModel])],
+  controllers: [CustomerController],
   providers: [
     CustomerService,
-    CustomerFavoriteProductService,
     {
       provide: RepositoryEnum.CUSTOMER,
       useClass: TypeOrmCustomerRepository,
     },
-    {
-      provide: RepositoryEnum.FAVORITE,
-      useClass: TypeOrmCustomerFavoriteProductRepository,
-    },
   ],
-  exports: [],
+  exports: [CustomerService],
 })
 export class CustomerModule {}
