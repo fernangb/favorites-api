@@ -16,4 +16,10 @@ export class TypeOrmIdentityRepository implements IIdentityRepository {
 
     await this.repository.save(this.repository.create(model));
   }
+
+  async findOneByCustomerId(customerId: string): Promise<IdentityEntity> {
+    const model = await this.repository.findOne({ where: { customerId } });
+
+    return TypeOrmIdentityMapper.toEntity(model);
+  }
 }

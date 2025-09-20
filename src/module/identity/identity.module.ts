@@ -7,12 +7,14 @@ import { IdentityController } from './infra/controller/identity.controller';
 import { IdentityService } from './application/service/identity.service';
 import { RepositoryEnum } from '../shared/enum/repository.enum';
 import { TypeOrmIdentityRepository } from './infra/database/repository/typeorm.identity.repository';
+import { TokenModule } from '../shared/module/token/token.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([TypeOrmIdentityModel]),
     CustomerModule,
     HashModule,
+    TokenModule,
   ],
   controllers: [IdentityController],
   providers: [
