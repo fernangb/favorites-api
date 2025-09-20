@@ -9,8 +9,8 @@ import { TypeOrmCustomerFavoriteProductModel } from '../../database/model/typeor
 import { CustomerModule } from '../../../../../module/customer/customer.module';
 import { TypeOrmCustomerModel } from '../../database/model/typeorm.customer.model';
 import { CustomerEntity } from '../../../../../module/customer/domain/entity/customer.entity';
-import { ProductEntity } from '../../../../../module/product/domain/entity/product.entity';
-import { TypeOrmProductModel } from '../../../../../module/product/infra/database/model/typeorm.product.model';
+import { ProductEntity } from '../../../../catalog/domain/entity/product.entity';
+import { TypeOrmProductModel } from '../../../../catalog/infra/database/model/typeorm.product.model';
 import { v4 as uuid } from 'uuid';
 
 describe('CustomerFavoriteProductController (e2e)', () => {

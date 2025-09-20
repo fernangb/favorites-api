@@ -4,7 +4,7 @@ import { AddCustomerFavoriteProductRequest } from '../dto/add-customer-favorite-
 import { CustomerFavoriteProductEntity } from '../../domain/entity/customer-favorite-product.entity';
 import { CustomerService } from './customer.service';
 import { TypeOrmCustomerFavoriteProductRepository } from '../../infra/database/repository/typeorm.customer-favorite-product.repository';
-import { IProductService } from '../../../../module/product/domain/service/product.service';
+import { IProductService } from '../../../catalog/domain/service/product.service';
 import { ServiceEnum } from '../../../../module/shared/enum/service.enum';
 import { FindCustomerFavoriteProductResponse } from '../dto/find-customer-favorite-products.dto';
 

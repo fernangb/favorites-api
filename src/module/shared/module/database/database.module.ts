@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmCustomerModel } from '../../../../module/customer/infra/database/model/typeorm.customer.model';
-import { TypeOrmProductModel } from '../../../../module/product/infra/database/model/typeorm.product.model';
+import { TypeOrmProductModel } from '../../../catalog/infra/database/model/typeorm.product.model';
 import { TypeOrmCustomerFavoriteProductModel } from '../../../../module/customer/infra/database/model/typeorm.customer-favorite-product.model';
 
 @Module({

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { CustomerEntity } from '../../domain/entity/customer.entity';
 import { IsArray } from 'class-validator';
-import { FindProductByIdResponse } from 'src/module/product/application/dto/find-product-by-id.dto';
+import { FindProductByIdResponse } from 'src/module/catalog/application/dto/find-product-by-id.dto';
 
 class FavoriteData {
   @ApiProperty({

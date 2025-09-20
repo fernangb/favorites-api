@@ -9,7 +9,7 @@ import { TypeOrmCustomerFavoriteProductModel } from './infra/database/model/type
 import { CustomerFavoriteProductController } from './infra/http/controller/customer-favorite-product.controller';
 import { CustomerFavoriteProductService } from './application/service/customer-favorite-product.service';
 import { TypeOrmCustomerFavoriteProductRepository } from './infra/database/repository/typeorm.customer-favorite-product.repository';
-import { ProductModule } from '../product/product.module';
+import { CatalogModule } from '../catalog/catalog.module';
 
 @Module({
   imports: [
@@ -17,7 +17,7 @@ import { ProductModule } from '../product/product.module';
       TypeOrmCustomerModel,
       TypeOrmCustomerFavoriteProductModel,
     ]),
-    ProductModule,
+    CatalogModule,
   ],
   controllers: [CustomerController, CustomerFavoriteProductController],
   providers: [

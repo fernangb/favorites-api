@@ -23,4 +23,4 @@ import { ProductController } from './infra/http/controller/product.controller';
   ],
   exports: [ServiceEnum.PRODUCT],
 })
-export class ProductModule {}
+export class CatalogModule {}

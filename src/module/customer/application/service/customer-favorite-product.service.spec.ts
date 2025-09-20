@@ -4,10 +4,10 @@ import { BadRequestException } from '@nestjs/common';
 import { RepositoryEnum } from '../../../../module/shared/enum/repository.enum';
 import { CustomerFavoriteProductService } from './customer-favorite-product.service';
 import { ICustomerFavoriteProductRepository } from '../../domain/repository/customer-favorite-product.repository';
-import { IProductService } from '../../../../module/product/domain/service/product.service';
+import { IProductService } from '../../../catalog/domain/service/product.service';
 import { ServiceEnum } from '../../../../module/shared/enum/service.enum';
 import { CustomerEntity } from '../../domain/entity/customer.entity';
-import { ProductEntity } from '../../../../module/product/domain/entity/product.entity';
+import { ProductEntity } from '../../../catalog/domain/entity/product.entity';
 import { CustomerFavoriteProductEntity } from '../../domain/entity/customer-favorite-product.entity';
 import { FindCustomerFavoriteProductResponse } from '../dto/find-customer-favorite-products.dto';
 

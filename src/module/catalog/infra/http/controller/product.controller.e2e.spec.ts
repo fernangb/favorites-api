@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { ProductService } from '../../../application/service/product.service';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmProductModel } from '../../database/model/typeorm.product.model';
-import { ProductModule } from '../../../product.module';
+import { CatalogModule } from '../../../catalog.module';
 import { Repository } from 'typeorm';
 import { ProductEntity } from '../../../domain/entity/product.entity';
 import { v4 as uuid } from 'uuid';
@@ -25,7 +25,7 @@ describe('ProductController (e2e)', () => {
           entities: [TypeOrmProductModel],
           logging: false,
         }),
-        ProductModule,
+        CatalogModule,
       ],
     }).compile();
 
