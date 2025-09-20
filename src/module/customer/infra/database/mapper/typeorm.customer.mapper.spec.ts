@@ -1,4 +1,4 @@
-import { CustomerEntity } from '../../../../../module/customer/domain/entity/customer.entity';
+import { CustomerEntity } from '../../../domain/entity/customer.entity';
 import { TypeOrmCustomerModel } from '../model/typeorm.customer.model';
 import { TypeOrmCustomerMapper } from './typeorm.customer.mapper';
 

@@ -3,20 +3,20 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CustomerFavoriteProductService } from '../../../../../module/customer/application/service/customer-favorite-product.service';
-import { CustomerFavoriteProductEntity } from '../../../../../module/customer/domain/entity/customer-favorite-product.entity';
-import { TypeOrmCustomerFavoriteProductModel } from '../../database/model/typeorm.customer-favorite-product.model';
-import { CustomerModule } from '../../../../../module/customer/customer.module';
-import { TypeOrmCustomerModel } from '../../database/model/typeorm.customer.model';
-import { CustomerEntity } from '../../../../../module/customer/domain/entity/customer.entity';
+import { TypeOrmFavoriteModel } from '../../database/model/typeorm.favorite.model';
+import { TypeOrmCustomerModel } from '../../../../customer/infra/database/model/typeorm.customer.model';
+import { CustomerEntity } from '../../../../customer/domain/entity/customer.entity';
 import { ProductEntity } from '../../../../catalog/domain/entity/product.entity';
 import { TypeOrmProductModel } from '../../../../catalog/infra/database/model/typeorm.product.model';
 import { v4 as uuid } from 'uuid';
+import { FavoriteEntity } from '../../../../../module/favorite/domain/entity/favorite.entity';
+import { FavoriteService } from '../../../../../module/favorite/application/service/favorite.service';
+import { FavoriteModule } from '../../../../../module/favorite/favorite.module';
 
-describe('CustomerFavoriteProductController (e2e)', () => {
+describe('FavoriteController (e2e)', () => {
   let app: INestApplication;
-  let service: CustomerFavoriteProductService;
-  let customerFavoriteProductRepository: Repository<CustomerFavoriteProductEntity>;
+  let service: FavoriteService;
+  let favoriteRepository: Repository<FavoriteEntity>;
   let customerRepository: Repository<CustomerEntity>;
   let productRepository: Repository<ProductEntity>;
 
@@ -29,13 +29,13 @@ describe('CustomerFavoriteProductController (e2e)', () => {
           dropSchema: true,
           synchronize: true,
           entities: [
-            TypeOrmCustomerFavoriteProductModel,
+            TypeOrmFavoriteModel,
             TypeOrmCustomerModel,
             TypeOrmProductModel,
           ],
           logging: false,
         }),
-        CustomerModule,
+        FavoriteModule,
       ],
     }).compile();
 
@@ -45,12 +45,10 @@ describe('CustomerFavoriteProductController (e2e)', () => {
     );
     await app.init();
 
-    service = moduleRef.get<CustomerFavoriteProductService>(
-      CustomerFavoriteProductService,
+    service = moduleRef.get<FavoriteService>(FavoriteService);
+    favoriteRepository = moduleRef.get<Repository<TypeOrmFavoriteModel>>(
+      getRepositoryToken(TypeOrmFavoriteModel),
     );
-    customerFavoriteProductRepository = moduleRef.get<
-      Repository<TypeOrmCustomerFavoriteProductModel>
-    >(getRepositoryToken(TypeOrmCustomerFavoriteProductModel));
     customerRepository = moduleRef.get<Repository<TypeOrmCustomerModel>>(
       getRepositoryToken(TypeOrmCustomerModel),
     );
@@ -64,12 +62,12 @@ describe('CustomerFavoriteProductController (e2e)', () => {
   });
 
   afterEach(async () => {
-    await customerFavoriteProductRepository.clear();
+    await favoriteRepository.clear();
     await customerRepository.clear();
   });
 
   describe('add', () => {
-    it('POST /customers/favorites - should add a customer favorite product', async () => {
+    it('POST /favorites/customers - should add a favorite', async () => {
       const dto = {
         customerId: uuid(),
         productId: uuid(),
@@ -103,7 +101,7 @@ describe('CustomerFavoriteProductController (e2e)', () => {
       const spyService = jest.spyOn(service, 'add');
 
       await request(app.getHttpServer())
-        .post('/customers/favorites')
+        .post('/favorites/customers')
         .send(dto)
         .expect(201);
 
@@ -118,21 +116,21 @@ describe('CustomerFavoriteProductController (e2e)', () => {
 
     it('should return 400 if customerId is not provided', async () => {
       return request(app.getHttpServer())
-        .post('/customers/favorites')
+        .post('/favorites/customers')
         .send({ productId: '1' })
         .expect(400);
     });
 
     it('should return 400 if product id is not provided', async () => {
       return request(app.getHttpServer())
-        .post('/customers/favorites')
+        .post('/favorites/customers')
         .send({ customerId: '1' })
         .expect(400);
     });
   });
 
   describe('findByCustomerId', () => {
-    it('/customers/favorites/:id (GET) - should find customer favorite products', async () => {
+    it('/favorites/customers/:id (GET) - should find favorites', async () => {
       const customerModel = {
         id: uuid(),
         name: 'John Doe',
@@ -155,7 +153,7 @@ describe('CustomerFavoriteProductController (e2e)', () => {
         customer: customerModel,
         customerId: customerModel.id,
         productId: productModel.id,
-      } as TypeOrmCustomerFavoriteProductModel;
+      } as TypeOrmFavoriteModel;
 
       await customerRepository.save(
         await customerRepository.create(customerModel),
@@ -165,14 +163,14 @@ describe('CustomerFavoriteProductController (e2e)', () => {
         await productRepository.create(productModel),
       );
 
-      await customerFavoriteProductRepository.save(
-        await customerFavoriteProductRepository.create(favoriteModel),
+      await favoriteRepository.save(
+        await favoriteRepository.create(favoriteModel),
       );
 
       const spyService = jest.spyOn(service, 'findByCustomerId');
 
       const response = await request(app.getHttpServer())
-        .get(`/customers/favorites/${customerModel.id}`)
+        .get(`/favorites/customers/${customerModel.id}`)
         .expect(200);
 
       expect(response.body.data.products.length).toBe(1);
@@ -181,7 +179,7 @@ describe('CustomerFavoriteProductController (e2e)', () => {
   });
 
   describe('delete', () => {
-    it('/customers/favorites/:customerId/:productId (DELETE) - should delete a customer favorite product', async () => {
+    it('/favorites/customers/:customerId/:productId (DELETE) - should delete a favorite', async () => {
       const customerId = uuid();
       const productId = uuid();
 
@@ -207,7 +205,7 @@ describe('CustomerFavoriteProductController (e2e)', () => {
         customer: customerModel,
         customerId: customerModel.id,
         productId: productModel.id,
-      } as TypeOrmCustomerFavoriteProductModel;
+      } as TypeOrmFavoriteModel;
 
       await customerRepository.save(
         await customerRepository.create(customerModel),
@@ -217,14 +215,14 @@ describe('CustomerFavoriteProductController (e2e)', () => {
         await productRepository.create(productModel),
       );
 
-      await customerFavoriteProductRepository.save(
-        await customerFavoriteProductRepository.create(favoriteModel),
+      await favoriteRepository.save(
+        await favoriteRepository.create(favoriteModel),
       );
 
       const spyService = jest.spyOn(service, 'delete');
 
       await request(app.getHttpServer())
-        .delete(`/customers/favorites/${customerId}/${productId}`)
+        .delete(`/favorites/customers/${customerId}/${productId}`)
         .expect(200);
 
       expect(spyService).toHaveBeenCalledTimes(1);

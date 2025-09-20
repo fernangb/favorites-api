@@ -1,16 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { TypeOrmCustomerFavoriteProductModel } from '../model/typeorm.customer-favorite-product.model';
-import { CustomerFavoriteProductEntity } from '../../../../../module/customer/domain/entity/customer-favorite-product.entity';
-import { CustomerEntity } from '../../../../../module/customer/domain/entity/customer.entity';
-import { TypeOrmCustomerFavoriteProductRepository } from './typeorm.customer-favorite-product.repository';
-import { TypeOrmCustomerModel } from '../model/typeorm.customer.model';
-import { TypeOrmCustomerRepository } from './typeorm.customer.repository';
+import { TypeOrmFavoriteModel } from '../model/typeorm.favorite.model';
+import { CustomerEntity } from '../../../../customer/domain/entity/customer.entity';
+import { TypeOrmCustomerModel } from '../../../../customer/infra/database/model/typeorm.customer.model';
+import { TypeOrmCustomerRepository } from '../../../../customer/infra/database/repository/typeorm.customer.repository';
+import { TypeOrmFavoriteRepository } from './typeorm.favorite.repository';
+import { FavoriteEntity } from '../../../../../module/favorite/domain/entity/favorite.entity';
 
-describe('TypeOrmCustomerRepository (integration)', () => {
-  let customerFavoriteProductRepository: TypeOrmCustomerFavoriteProductRepository;
-  let typeOrmRepository: Repository<TypeOrmCustomerFavoriteProductModel>;
+describe('TypeOrmFavoriteRepository (integration)', () => {
+  let favoriteRepository: TypeOrmFavoriteRepository;
+  let typeOrmRepository: Repository<TypeOrmFavoriteModel>;
   let typeOrmCustomerRepository: Repository<TypeOrmCustomerModel>;
 
   beforeAll(async () => {
@@ -20,28 +20,21 @@ describe('TypeOrmCustomerRepository (integration)', () => {
           type: 'sqlite',
           database: ':memory:',
           dropSchema: true,
-          entities: [TypeOrmCustomerFavoriteProductModel, TypeOrmCustomerModel],
+          entities: [TypeOrmFavoriteModel, TypeOrmCustomerModel],
           synchronize: true,
           logging: false,
         }),
-        TypeOrmModule.forFeature([
-          TypeOrmCustomerFavoriteProductModel,
-          TypeOrmCustomerModel,
-        ]),
+        TypeOrmModule.forFeature([TypeOrmFavoriteModel, TypeOrmCustomerModel]),
       ],
-      providers: [
-        TypeOrmCustomerFavoriteProductRepository,
-        TypeOrmCustomerRepository,
-      ],
+      providers: [TypeOrmFavoriteRepository, TypeOrmCustomerRepository],
     }).compile();
 
-    customerFavoriteProductRepository =
-      module.get<TypeOrmCustomerFavoriteProductRepository>(
-        TypeOrmCustomerFavoriteProductRepository,
-      );
-    typeOrmRepository = module.get<
-      Repository<TypeOrmCustomerFavoriteProductModel>
-    >(getRepositoryToken(TypeOrmCustomerFavoriteProductModel));
+    favoriteRepository = module.get<TypeOrmFavoriteRepository>(
+      TypeOrmFavoriteRepository,
+    );
+    typeOrmRepository = module.get<Repository<TypeOrmFavoriteModel>>(
+      getRepositoryToken(TypeOrmFavoriteModel),
+    );
     typeOrmCustomerRepository = module.get<Repository<TypeOrmCustomerModel>>(
       getRepositoryToken(TypeOrmCustomerModel),
     );
@@ -53,7 +46,7 @@ describe('TypeOrmCustomerRepository (integration)', () => {
   });
 
   describe('create', () => {
-    it('should create a customer favorite product entity', async () => {
+    it('should create a favorite entity', async () => {
       const id = '1';
       const customerId = '123';
       const productId = '12345';
@@ -68,7 +61,7 @@ describe('TypeOrmCustomerRepository (integration)', () => {
 
       await typeOrmCustomerRepository.save(customerEntity);
 
-      const favorite = new CustomerFavoriteProductEntity({
+      const favorite = new FavoriteEntity({
         id,
         customer: customerEntity,
         productId,
@@ -96,15 +89,15 @@ describe('TypeOrmCustomerRepository (integration)', () => {
   });
 
   describe('findByCustomerId', () => {
-    it('should not find a customer favorite product if customer has none', async () => {
+    it('should not find a favorite if customer has none', async () => {
       const customerId = '123';
       const result =
-        await customerFavoriteProductRepository.findByCustomerId(customerId);
+        await favoriteRepository.findByCustomerId(customerId);
 
       expect(result).toEqual([]);
     });
 
-    it('should find customer favorite products', async () => {
+    it('should find favorites', async () => {
       const id = '1';
       const customerId = '123';
       const productId = '12345';
@@ -119,7 +112,7 @@ describe('TypeOrmCustomerRepository (integration)', () => {
 
       await typeOrmCustomerRepository.save(customerEntity);
 
-      const favorite = new CustomerFavoriteProductEntity({
+      const favorite = new FavoriteEntity({
         id,
         customer: customerEntity,
         productId,
@@ -136,20 +129,20 @@ describe('TypeOrmCustomerRepository (integration)', () => {
       );
 
       const result =
-        await customerFavoriteProductRepository.findByCustomerId(customerId);
+        await favoriteRepository.findByCustomerId(customerId);
 
       expect(result.length).toBe(1);
-      expect(result[0]).toBeInstanceOf(CustomerFavoriteProductEntity);
+      expect(result[0]).toBeInstanceOf(FavoriteEntity);
       expect(result[0].customer.id).toBe(customerId);
       expect(result[0].productId).toBe(productId);
     });
   });
 
   describe('findByItem', () => {
-    it('should not find a customer favorite product item', async () => {
+    it('should not find a favorite item', async () => {
       const customerId = '123';
       const productId = '123';
-      const result = await customerFavoriteProductRepository.findByItem(
+      const result = await favoriteRepository.findByItem(
         customerId,
         productId,
       );
@@ -157,7 +150,7 @@ describe('TypeOrmCustomerRepository (integration)', () => {
       expect(result).toBeNull();
     });
 
-    it('should not find customer favorite product item if product is not a favorite', async () => {
+    it('should not find favorite item if product is not a favorite', async () => {
       const id = '1';
       const customerId = '123';
       const productId = '12345';
@@ -173,7 +166,7 @@ describe('TypeOrmCustomerRepository (integration)', () => {
 
       await typeOrmCustomerRepository.save(customerEntity);
 
-      const favorite = new CustomerFavoriteProductEntity({
+      const favorite = new FavoriteEntity({
         id,
         customer: customerEntity,
         productId,
@@ -189,14 +182,14 @@ describe('TypeOrmCustomerRepository (integration)', () => {
         }),
       );
 
-      const result = await customerFavoriteProductRepository.findByItem(
+      const result = await favoriteRepository.findByItem(
         customerId,
         productId2,
       );
       expect(result).toBeNull();
     });
 
-    it('should find customer favorite product item', async () => {
+    it('should find favorite item', async () => {
       const id = '1';
       const customerId = '123';
       const productId = '12345';
@@ -211,7 +204,7 @@ describe('TypeOrmCustomerRepository (integration)', () => {
 
       await typeOrmCustomerRepository.save(customerEntity);
 
-      const favorite = new CustomerFavoriteProductEntity({
+      const favorite = new FavoriteEntity({
         id,
         customer: customerEntity,
         productId,
@@ -227,18 +220,18 @@ describe('TypeOrmCustomerRepository (integration)', () => {
         }),
       );
 
-      const result = await customerFavoriteProductRepository.findByItem(
+      const result = await favoriteRepository.findByItem(
         customerId,
         productId,
       );
-      expect(result).toBeInstanceOf(CustomerFavoriteProductEntity);
+      expect(result).toBeInstanceOf(FavoriteEntity);
       expect(result.customer.id).toBe(customerId);
       expect(result.productId).toBe(productId);
     });
   });
 
   describe('delete', () => {
-    it('should not delete a customer favorite product if product is not a favorite', async () => {
+    it('should not delete a favorite if product is not a favorite', async () => {
       const id = '1';
       const customerId = '123';
       const productId = '12345';
@@ -254,7 +247,7 @@ describe('TypeOrmCustomerRepository (integration)', () => {
 
       await typeOrmCustomerRepository.save(customerEntity);
 
-      const favorite = new CustomerFavoriteProductEntity({
+      const favorite = new FavoriteEntity({
         id,
         customer: customerEntity,
         productId,
@@ -271,19 +264,19 @@ describe('TypeOrmCustomerRepository (integration)', () => {
       );
 
       const favoritesBefore =
-        await customerFavoriteProductRepository.findByCustomerId(customerId);
+        await favoriteRepository.findByCustomerId(customerId);
 
       expect(favoritesBefore.length).toBe(1);
 
-      await customerFavoriteProductRepository.delete(customerId, productId2);
+      await favoriteRepository.delete(customerId, productId2);
 
       const favoritesAfter =
-        await customerFavoriteProductRepository.findByCustomerId(customerId);
+        await favoriteRepository.findByCustomerId(customerId);
 
       expect(favoritesAfter.length).toBe(1);
     });
 
-    it('should delete a customer favorite product', async () => {
+    it('should delete a favorite', async () => {
       const id = '1';
       const customerId = '123';
       const productId = '12345';
@@ -298,7 +291,7 @@ describe('TypeOrmCustomerRepository (integration)', () => {
 
       await typeOrmCustomerRepository.save(customerEntity);
 
-      const favorite = new CustomerFavoriteProductEntity({
+      const favorite = new FavoriteEntity({
         id,
         customer: customerEntity,
         productId,
@@ -315,14 +308,14 @@ describe('TypeOrmCustomerRepository (integration)', () => {
       );
 
       const favoritesBefore =
-        await customerFavoriteProductRepository.findByCustomerId(customerId);
+        await favoriteRepository.findByCustomerId(customerId);
 
       expect(favoritesBefore.length).toBe(1);
 
-      await customerFavoriteProductRepository.delete(customerId, productId);
+      await favoriteRepository.delete(customerId, productId);
 
       const favoritesAfter =
-        await customerFavoriteProductRepository.findByCustomerId(customerId);
+        await favoriteRepository.findByCustomerId(customerId);
 
       expect(favoritesAfter.length).toBe(0);
     });

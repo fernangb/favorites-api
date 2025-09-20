@@ -1,5 +1,5 @@
 export enum RepositoryEnum {
   CUSTOMER = 'ICustomerRepository',
-  FAVORITE = 'ICustomerFavoriteProductRepository',
+  FAVORITE = 'IFavoriteRepository',
   PRODUCT = 'IProductRepository',
 }

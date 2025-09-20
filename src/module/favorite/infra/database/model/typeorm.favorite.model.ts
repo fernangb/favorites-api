@@ -7,11 +7,11 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { TypeOrmCustomerModel } from './typeorm.customer.model';
-import { CustomerEntity } from '../../../../../module/customer/domain/entity/customer.entity';
+import { TypeOrmCustomerModel } from '../../../../customer/infra/database/model/typeorm.customer.model';
+import { CustomerEntity } from '../../../../customer/domain/entity/customer.entity';
 
-@Entity({ name: 'customer_favorite_products' })
-export class TypeOrmCustomerFavoriteProductModel {
+@Entity({ name: 'favorites' })
+export class TypeOrmFavoriteModel {
   @PrimaryColumn('uuid')
   id: string;
 

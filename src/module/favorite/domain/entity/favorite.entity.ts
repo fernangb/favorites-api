@@ -1,19 +1,19 @@
+import { CustomerEntity } from '../../../customer/domain/entity/customer.entity';
 import {
   DefaultEntityProps,
   DefaultEntity,
-} from '../../../../module/shared/entity/default.entity';
-import { CustomerEntity } from './customer.entity';
+} from '../../../shared/entity/default.entity';
 
-interface CustomerFavoriteProductProps extends DefaultEntityProps {
+interface FavoriteProps extends DefaultEntityProps {
   customer: CustomerEntity;
   productId: string;
 }
 
-export class CustomerFavoriteProductEntity extends DefaultEntity {
+export class FavoriteEntity extends DefaultEntity {
   customer: CustomerEntity;
   productId: string;
 
-  constructor(props: CustomerFavoriteProductProps) {
+  constructor(props: FavoriteProps) {
     super({
       id: props.id,
       createdAt: props.createdAt,

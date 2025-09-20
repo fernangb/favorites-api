@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CustomerEntity } from '../../domain/entity/customer.entity';
+import { CustomerEntity } from '../../../customer/domain/entity/customer.entity';
 import { IsArray } from 'class-validator';
-import { FindProductByIdResponse } from 'src/module/catalog/application/dto/find-product-by-id.dto';
+import { FindProductByIdResponse } from '../../../../module/catalog/application/dto/find-product-by-id.dto';
 
 class FavoriteData {
   @ApiProperty({
@@ -33,7 +33,7 @@ class FavoriteData {
   products: FindProductByIdResponse[];
 }
 
-export class FindCustomerFavoriteProductResponse {
+export class FindFavoriteResponse {
   @ApiProperty({
     example: [
       {

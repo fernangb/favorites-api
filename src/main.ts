@@ -9,7 +9,6 @@ async function bootstrap() {
     .setTitle('Favorites API')
     .setDescription('API to manage customer favorite products')
     .setVersion('1.0')
-    .addTag('favorites-api')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

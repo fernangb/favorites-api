@@ -1,5 +1,5 @@
-import { FavoriteEntity } from '../../../../favorite/domain/entity/favorite.entity';
-import { TypeOrmFavoriteModel } from '../../../../favorite/infra/database/model/typeorm.favorite.model';
+import { FavoriteEntity } from '../../../domain/entity/favorite.entity';
+import { TypeOrmFavoriteModel } from '../model/typeorm.favorite.model';
 
 export class TypeOrmFavoriteMapper {
   static toEntity(model: TypeOrmFavoriteModel): FavoriteEntity | null {

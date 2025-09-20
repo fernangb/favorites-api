@@ -1,8 +1,8 @@
-import { CustomerFavoriteProductEntity } from './customer-favorite-product.entity';
-import { CustomerEntity } from './customer.entity';
+import { FavoriteEntity } from './favorite.entity';
+import { CustomerEntity } from '../../../customer/domain/entity/customer.entity';
 
-describe('CustomerFavoriteProductEntity', () => {
-  it('should create a customer favorite product', () => {
+describe('FavoriteEntity', () => {
+  it('should create a favorite', () => {
     const customer = new CustomerEntity({
       id: '123',
       name: 'John Doe',
@@ -21,7 +21,7 @@ describe('CustomerFavoriteProductEntity', () => {
 
     const { id, productId, createdAt, updatedAt } = props;
 
-    const favorite = new CustomerFavoriteProductEntity({
+    const favorite = new FavoriteEntity({
       id,
       customer,
       productId,
@@ -29,7 +29,7 @@ describe('CustomerFavoriteProductEntity', () => {
       updatedAt,
     });
 
-    expect(favorite).toBeInstanceOf(CustomerFavoriteProductEntity);
+    expect(favorite).toBeInstanceOf(FavoriteEntity);
     expect(favorite.id).toBe(id);
     expect(favorite.customer).toStrictEqual(customer);
     expect(favorite.productId).toBe(productId);

@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CustomerService } from './customer.service';
+import { CustomerService } from '../../../customer/application/service/customer.service';
 import { BadRequestException } from '@nestjs/common';
-import { RepositoryEnum } from '../../../../module/shared/enum/repository.enum';
-import { FavoriteService } from '../../../favorite/application/service/favorite.service';
-import { IFavoriteRepository } from '../../../favorite/domain/repository/favorite.repository';
+import { RepositoryEnum } from '../../../shared/enum/repository.enum';
+import { FavoriteService } from './favorite.service';
+import { IFavoriteRepository } from '../../domain/repository/favorite.repository';
 import { IProductService } from '../../../catalog/domain/service/product.service';
-import { ServiceEnum } from '../../../../module/shared/enum/service.enum';
-import { CustomerEntity } from '../../domain/entity/customer.entity';
+import { ServiceEnum } from '../../../shared/enum/service.enum';
+import { CustomerEntity } from '../../../customer/domain/entity/customer.entity';
 import { ProductEntity } from '../../../catalog/domain/entity/product.entity';
-import { FindFavoriteResponse } from '../../../favorite/application/dto/find-favorite.dto';
-import { FavoriteEntity } from '../../../favorite/domain/entity/favorite.entity';
+import { FindFavoriteResponse } from '../dto/find-favorite.dto';
+import { FavoriteEntity } from '../../domain/entity/favorite.entity';
 
 describe('FavoriteService', () => {
   let customerFavoriteProductService: FavoriteService;

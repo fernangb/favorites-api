@@ -6,16 +6,16 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { DefaultErrorResponse } from '../../../../shared/error/default.error';
-import { CustomerFavoriteProductService } from '../../../../../module/customer/application/service/customer-favorite-product.service';
-import { AddCustomerFavoriteProductRequest } from '../../../../../module/customer/application/dto/add-customer-favorite-product.dto';
-import { FindCustomerFavoriteProductResponse } from '../../../../../module/customer/application/dto/find-customer-favorite-products.dto';
+import { FavoriteService } from '../../../application/service/favorite.service';
+import { AddFavoriteRequest } from '../../../application/dto/add-favorite.dto';
+import { FindFavoriteResponse } from '../../../application/dto/find-favorite.dto';
 
-@Controller('customers')
-@ApiTags('Customers')
-export class CustomerFavoriteProductController {
-  constructor(private readonly service: CustomerFavoriteProductService) {}
+@Controller('favorites')
+@ApiTags('Favorites')
+export class FavoriteController {
+  constructor(private readonly service: FavoriteService) {}
 
-  @Post('/favorites')
+  @Post('/customers')
   @ApiOperation({ summary: 'Add a favorite product to customer' })
   @ApiResponse({
     status: 201,
@@ -25,12 +25,12 @@ export class CustomerFavoriteProductController {
     description: 'Some data is invalid',
     type: DefaultErrorResponse,
   })
-  async add(@Body() dto: AddCustomerFavoriteProductRequest): Promise<void> {
+  async add(@Body() dto: AddFavoriteRequest): Promise<void> {
     await this.service.add(dto);
   }
 
-  @Get('/favorites/:id')
-  @ApiOperation({ summary: 'Find customer favorite products' })
+  @Get('/customers/:id')
+  @ApiOperation({ summary: 'Find favorites' })
   @ApiResponse({
     status: 200,
     description: 'Favorite products found',
@@ -41,11 +41,11 @@ export class CustomerFavoriteProductController {
   })
   async findByCustomerId(
     @Param('id') id: string,
-  ): Promise<FindCustomerFavoriteProductResponse> {
+  ): Promise<FindFavoriteResponse> {
     return this.service.findByCustomerId(id);
   }
 
-  @ApiOperation({ summary: 'Delete customer favorite product' })
+  @ApiOperation({ summary: 'Delete favorite' })
   @ApiResponse({
     status: 200,
     description: 'Favorite product deleted',
@@ -54,7 +54,7 @@ export class CustomerFavoriteProductController {
     description: 'Some data is invalid',
     type: DefaultErrorResponse,
   })
-  @Delete('/favorites/:customerId/:productId')
+  @Delete('/customers/:customerId/:productId')
   async delete(
     @Param('customerId') customerId: string,
     @Param('productId') productId: string,
