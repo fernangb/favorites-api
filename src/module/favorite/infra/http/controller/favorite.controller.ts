@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiOperation,
@@ -9,6 +17,8 @@ import { DefaultErrorResponse } from '../../../../shared/error/default.error';
 import { FavoriteService } from '../../../application/service/favorite.service';
 import { AddFavoriteRequest } from '../../../application/dto/add-favorite.dto';
 import { FindFavoriteResponse } from '../../../application/dto/find-favorite.dto';
+import { AuthenticationGuard } from '../../../../shared/module/auth/guard/authentication.guard';
+import { AuthorizationGuard } from '../../../../shared/module/auth/guard/authorization.guard';
 
 @Controller('favorites')
 @ApiTags('Favorites')
@@ -25,6 +35,7 @@ export class FavoriteController {
     description: 'Some data is invalid',
     type: DefaultErrorResponse,
   })
+  @UseGuards(AuthenticationGuard, AuthorizationGuard)
   async add(@Body() dto: AddFavoriteRequest): Promise<void> {
     await this.service.add(dto);
   }
@@ -39,6 +50,7 @@ export class FavoriteController {
     description: 'Some data is invalid',
     type: DefaultErrorResponse,
   })
+  @UseGuards(AuthenticationGuard, AuthorizationGuard)
   async findByCustomerId(
     @Param('id') id: string,
   ): Promise<FindFavoriteResponse> {
@@ -54,6 +66,7 @@ export class FavoriteController {
     description: 'Some data is invalid',
     type: DefaultErrorResponse,
   })
+  @UseGuards(AuthenticationGuard, AuthorizationGuard)
   @Delete('/customers/:customerId/:productId')
   async delete(
     @Param('customerId') customerId: string,

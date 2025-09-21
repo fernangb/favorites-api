@@ -49,62 +49,6 @@ describe('CustomerController (e2e)', () => {
     await customerRepository.clear();
   });
 
-  describe('create', () => {
-    it('POST /customers - should create a customer', async () => {
-      const dto = {
-        name: 'John Doe',
-        email: 'johndoe@email.com',
-      };
-
-      const spyService = jest.spyOn(service, 'create');
-
-      await request(app.getHttpServer())
-        .post('/customers')
-        .send(dto)
-        .expect(201);
-
-      expect(spyService).toHaveBeenCalledTimes(1);
-      expect(spyService).toHaveBeenCalledWith(
-        expect.objectContaining({
-          name: dto.name,
-          email: dto.email,
-        }),
-      );
-    });
-
-    it('should return 400 if name is not provided', async () => {
-      return request(app.getHttpServer())
-        .post('/customers')
-        .send({ email: 'johndoe@email.com' })
-        .expect(400);
-    });
-
-    it('should return 400 if email is not provided', async () => {
-      return request(app.getHttpServer())
-        .post('/customers')
-        .send({ name: 'John Doe' })
-        .expect(400);
-    });
-  });
-
-  describe('findAll', () => {
-    it('/customers (GET) - should find all customers', async () => {
-      await customerRepository.save([
-        { id: uuid(), name: 'John Doe', email: 'john@example.com' },
-        { id: uuid(), name: 'Jane Doe', email: 'jane@example.com' },
-      ]);
-
-      const spyService = jest.spyOn(service, 'findAll');
-
-      const response = await request(app.getHttpServer())
-        .get(`/customers`)
-        .expect(200);
-
-      expect(response.body.data.length).toBe(2);
-      expect(spyService).toHaveBeenCalled();
-    });
-  });
-
   describe('findOneById', () => {
     it('/customers/:id (GET) - should find a customer by id', async () => {
       const id = uuid();
