@@ -18,7 +18,10 @@ export class FavoriteService {
     private readonly productService: IProductService,
   ) {}
 
-  async add({ customerId, productId }: AddFavoriteRequest): Promise<void> {
+  async add(
+    customerId: string,
+    { productId }: AddFavoriteRequest,
+  ): Promise<void> {
     const customer = await this.customerService.findOneById(customerId);
 
     if (!customer) throw new BadRequestException('Customer not exists');

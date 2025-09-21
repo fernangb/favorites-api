@@ -25,7 +25,7 @@ import { AuthorizationGuard } from '../../../../shared/module/auth/guard/authori
 export class FavoriteController {
   constructor(private readonly service: FavoriteService) {}
 
-  @Post('/customers')
+  @Post('/customers/:id')
   @ApiOperation({ summary: 'Add a favorite product to customer' })
   @ApiResponse({
     status: 201,
@@ -36,8 +36,11 @@ export class FavoriteController {
     type: DefaultErrorResponse,
   })
   @UseGuards(AuthenticationGuard, AuthorizationGuard)
-  async add(@Body() dto: AddFavoriteRequest): Promise<void> {
-    await this.service.add(dto);
+  async add(
+    @Param('id') id: string,
+    @Body() dto: AddFavoriteRequest,
+  ): Promise<void> {
+    await this.service.add(id, dto);
   }
 
   @Get('/customers/:id')
@@ -67,9 +70,9 @@ export class FavoriteController {
     type: DefaultErrorResponse,
   })
   @UseGuards(AuthenticationGuard, AuthorizationGuard)
-  @Delete('/customers/:customerId/:productId')
+  @Delete('/customers/:id/:productId')
   async delete(
-    @Param('customerId') customerId: string,
+    @Param('id') customerId: string,
     @Param('productId') productId: string,
   ): Promise<void> {
     return this.service.delete(customerId, productId);

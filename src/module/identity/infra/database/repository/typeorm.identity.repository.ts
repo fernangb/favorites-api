@@ -22,4 +22,18 @@ export class TypeOrmIdentityRepository implements IIdentityRepository {
 
     return TypeOrmIdentityMapper.toEntity(model);
   }
+
+  async setPassword(customerId: string, password: string): Promise<void> {
+    await this.repository.update(
+      { customerId },
+      {
+        password,
+        updatedAt: new Date(),
+      },
+    );
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.repository.delete(id);
+  }
 }

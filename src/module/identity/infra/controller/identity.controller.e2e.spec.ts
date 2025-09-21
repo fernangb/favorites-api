@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { v4 as uuid } from 'uuid';
-import { IdentityService } from '../../application/service/identity.service';
+import { IdentityAuthService } from '../../application/service/identity.auth.service';
 import { TypeOrmIdentityModel } from '../database/model/typeorm.identity.model';
 import { TypeOrmCustomerModel } from '../../../../module/customer/infra/database/model/typeorm.customer.model';
 import { IdentityModule } from '../../identity.module';
@@ -35,7 +35,7 @@ async function seedUser(
 
 describe('IdentityController (e2e)', () => {
   let app: INestApplication;
-  let service: IdentityService;
+  let service: IdentityAuthService;
   let identityRepository: Repository<TypeOrmIdentityModel>;
   let customerRepository: Repository<TypeOrmCustomerModel>;
 
@@ -60,7 +60,7 @@ describe('IdentityController (e2e)', () => {
     );
     await app.init();
 
-    service = moduleRef.get<IdentityService>(IdentityService);
+    service = moduleRef.get<IdentityAuthService>(IdentityAuthService);
     identityRepository = moduleRef.get<Repository<TypeOrmIdentityModel>>(
       getRepositoryToken(TypeOrmIdentityModel),
     );

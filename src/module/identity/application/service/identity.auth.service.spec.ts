@@ -1,18 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BadRequestException } from '@nestjs/common';
-import { RepositoryEnum } from '../../../../module/shared/enum/repository.enum';
-import { IdentityService } from './identity.service';
+import { RepositoryEnum } from '../../../shared/enum/repository.enum';
+import { IdentityAuthService } from './identity.auth.service';
 import { IIdentityRepository } from '../../domain/repository/identity.repository';
-import { CustomerService } from '../../../../module/customer/application/service/customer.service';
+import { CustomerService } from '../../../customer/application/service/customer.service';
 import { SignUpRequest } from '../dto/sign-up.dto';
-import { CustomerEntity } from '../../../../module/customer/domain/entity/customer.entity';
-import HashService from '../../../../module/shared/module/hash/hash.service';
-import TokenService from '../../../../module/shared/module/token/token.service';
+import { CustomerEntity } from '../../../customer/domain/entity/customer.entity';
+import HashService from '../../../shared/module/hash/hash.service';
+import TokenService from '../../../shared/module/token/token.service';
 import { SignInRequest, SignInResponse } from '../dto/sign-in.dto';
 import { IdentityEntity } from '../../domain/entity/identity.entity';
 
-describe('IdentityService', () => {
-  let identityService: IdentityService;
+describe('IdentityAuthService', () => {
+  let identityAuthService: IdentityAuthService;
   let identityRepository: IIdentityRepository;
   let customerService: CustomerService;
   let hashService: HashService;
@@ -21,7 +21,7 @@ describe('IdentityService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        IdentityService,
+        IdentityAuthService,
         {
           provide: RepositoryEnum.IDENTITY,
           useValue: {
@@ -53,7 +53,7 @@ describe('IdentityService', () => {
       ],
     }).compile();
 
-    identityService = module.get<IdentityService>(IdentityService);
+    identityAuthService = module.get<IdentityAuthService>(IdentityAuthService);
     identityRepository = module.get<IIdentityRepository>(
       RepositoryEnum.IDENTITY,
     );
@@ -79,7 +79,7 @@ describe('IdentityService', () => {
         new BadRequestException(),
       );
 
-      await expect(identityService.signUp(dto)).rejects.toThrow(
+      await expect(identityAuthService.signUp(dto)).rejects.toThrow(
         BadRequestException,
       );
       expect(customerService.create).toHaveBeenCalled();
@@ -103,7 +103,7 @@ describe('IdentityService', () => {
       (customerService.create as jest.Mock).mockResolvedValue(undefined);
       (hashService.create as jest.Mock).mockResolvedValue('hashed-password');
 
-      await identityService.signUp(dto);
+      await identityAuthService.signUp(dto);
 
       expect(customerService.create).toHaveBeenCalled();
       expect(customerService.findOneByEmail).toHaveBeenCalled();
@@ -126,7 +126,7 @@ describe('IdentityService', () => {
 
       (customerService.findOneByEmail as jest.Mock).mockResolvedValue(null);
 
-      await expect(identityService.signIn(dto)).rejects.toThrow(
+      await expect(identityAuthService.signIn(dto)).rejects.toThrow(
         BadRequestException,
       );
       expect(customerService.findOneByEmail).toHaveBeenCalled();
@@ -156,7 +156,7 @@ describe('IdentityService', () => {
         null,
       );
 
-      await expect(identityService.signIn(dto)).rejects.toThrow(
+      await expect(identityAuthService.signIn(dto)).rejects.toThrow(
         BadRequestException,
       );
       expect(customerService.findOneByEmail).toHaveBeenCalled();
@@ -192,7 +192,7 @@ describe('IdentityService', () => {
       );
       (hashService.compare as jest.Mock).mockResolvedValue(false);
 
-      await expect(identityService.signIn(dto)).rejects.toThrow(
+      await expect(identityAuthService.signIn(dto)).rejects.toThrow(
         BadRequestException,
       );
       expect(customerService.findOneByEmail).toHaveBeenCalled();
@@ -235,7 +235,7 @@ describe('IdentityService', () => {
       (hashService.compare as jest.Mock).mockResolvedValue(true);
       (tokenService.create as jest.Mock).mockReturnValue(token);
 
-      const response = await identityService.signIn(dto);
+      const response = await identityAuthService.signIn(dto);
 
       expect(response).toEqual(mockResponse);
       expect(customerService.findOneByEmail).toHaveBeenCalled();

@@ -20,9 +20,12 @@ API para gerenciar os produtos favoritos dos clientes.
 <details>
 <summary>✨ Funcionalidades</summary>
 
+**Identidade**
+- Registrar cliente
+- Login
+</details>
+
 **Clientes**
-- Criar cliente
-- Buscar clientes
 - Buscar cliente por id
 - Atualizar cliente
 - Excluir cliente

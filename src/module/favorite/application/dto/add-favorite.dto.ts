@@ -5,9 +5,5 @@ import { v4 as uuid } from 'uuid';
 export class AddFavoriteRequest {
   @ApiProperty({ example: uuid() })
   @IsUUID()
-  customerId: string;
-
-  @ApiProperty({ example: uuid() })
-  @IsUUID()
   productId: string;
 }

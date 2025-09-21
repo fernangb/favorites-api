@@ -5,7 +5,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { IdentityService } from '../../application/service/identity.service';
+import { IdentityAuthService } from '../../application/service/identity.auth.service';
 import { DefaultErrorResponse } from '../../../../module/shared/error/default.error';
 import { SignUpRequest } from '../../application/dto/sign-up.dto';
 import {
@@ -16,7 +16,7 @@ import {
 @Controller('identity')
 @ApiTags('Identity')
 export class IdentityController {
-  constructor(private readonly service: IdentityService) {}
+  constructor(private readonly service: IdentityAuthService) {}
 
   @Post('signUp')
   @ApiOperation({ summary: 'Create customer' })
