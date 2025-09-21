@@ -87,6 +87,7 @@
       "/node_modules/",
       "\\.module\\.ts$",
       "\\.dto\\.ts$",
+      "\\.config\\.ts$",
       "main\\.ts$"
     ],
     "collectCoverageFrom": [
@@ -94,6 +95,7 @@
       "!src/**/*.module.ts",
       "!src/module/**/*.module.ts",
       "!src/module/**/application/dto/*.dto.ts",
+      "!src/module/identity/config/auth.config.ts",
       "!src/main.ts"
     ],
     "coverageDirectory": "coverage",

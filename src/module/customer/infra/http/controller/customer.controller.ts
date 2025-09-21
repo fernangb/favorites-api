@@ -17,8 +17,8 @@ import {
 import { DefaultErrorResponse } from '../../../../shared/error/default.error';
 import { CustomerEntity } from '../../../../../module/customer/domain/entity/customer.entity';
 import { UpdateCustomerRequest } from '../../../../../module/customer/application/dto/update-customer.dto';
-import { AuthorizationGuard } from 'src/module/shared/module/auth/guard/authorization.guard';
-import { AuthenticationGuard } from 'src/module/shared/module/auth/guard/authentication.guard';
+import { AuthorizationGuard } from '../../../../../module/shared/module/auth/guard/authorization.guard';
+import { AuthenticationGuard } from '../../../../../module/shared/module/auth/guard/authentication.guard';
 
 @Controller('customers')
 @ApiTags('Customers')

@@ -9,8 +9,4 @@ export class UpdateCustomerRequest {
   @ApiProperty({ example: 'johndoe@email.com' })
   @IsEmail()
   email: string;
-
-  @ApiProperty()
-  @IsString()
-  password: string;
 }

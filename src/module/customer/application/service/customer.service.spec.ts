@@ -6,10 +6,16 @@ import { CustomerEntity } from '../../domain/entity/customer.entity';
 import { BadRequestException } from '@nestjs/common';
 import { RepositoryEnum } from '../../../../module/shared/enum/repository.enum';
 import { FindCustomerResponse } from '../dto/find-customer.dto';
+import { IdentityService } from '../../../../module/identity/application/service/identity.service';
+
+jest.mock('typeorm-transactional', () => ({
+  Transactional: () => () => {},
+}));
 
 describe('CustomerService', () => {
   let customerService: CustomerService;
   let customerRepository: ICustomerRepository;
+  let identityService: IdentityService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -26,6 +32,14 @@ describe('CustomerService', () => {
             delete: jest.fn(),
           },
         },
+        {
+          provide: IdentityService,
+          useValue: {
+            findOneByEmail: jest.fn(),
+            setPassword: jest.fn(),
+            delete: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
@@ -33,6 +47,7 @@ describe('CustomerService', () => {
     customerRepository = module.get<ICustomerRepository>(
       RepositoryEnum.CUSTOMER,
     );
+    identityService = module.get<IdentityService>(IdentityService);
   });
 
   describe('create', () => {
@@ -129,6 +144,36 @@ describe('CustomerService', () => {
       expect(result).toEqual(customer);
     });
   });
+
+  describe('findOneByEmail', () => {
+    it('should return null if customers not found', async () => {
+      const email = 'johndoe@email.com';
+
+      (customerRepository.findOneByEmail as jest.Mock).mockResolvedValue(null);
+
+      const result = await customerService.findOneByEmail(email);
+
+      expect(result).toBeNull();
+    });
+    it('should find customer by email', async () => {
+      const email = 'johndoe@email.com';
+
+      const customer = new CustomerEntity({
+        id: '1',
+        name: 'John Doe',
+        email,
+      });
+
+      (customerRepository.findOneByEmail as jest.Mock).mockResolvedValue(
+        customer,
+      );
+
+      const result = await customerService.findOneByEmail(email);
+
+      expect(result).toEqual(customer);
+    });
+  });
+
   describe('update', () => {
     it('should not update a customer if not exists', async () => {
       const id = '123';
@@ -137,11 +182,14 @@ describe('CustomerService', () => {
         email: 'johnjohn@email.com',
       };
 
+      jest.spyOn(customerRepository, 'update');
+
       (customerRepository.findOneById as jest.Mock).mockResolvedValue(null);
 
       await expect(customerService.update(id, dto)).rejects.toThrow(
         BadRequestException,
       );
+      expect(customerRepository.update).not.toHaveBeenCalled();
     });
 
     it('should update a customer', async () => {
@@ -156,6 +204,8 @@ describe('CustomerService', () => {
         name: 'John Doe',
         email: 'johndoe@email.com',
       });
+
+      jest.spyOn(customerRepository, 'update');
 
       (customerRepository.findOneById as jest.Mock).mockResolvedValue({
         customer,
@@ -173,11 +223,16 @@ describe('CustomerService', () => {
     it('should not delete a customer if not exists', async () => {
       const id = '123';
 
+      jest.spyOn(customerRepository, 'delete');
+      jest.spyOn(identityService, 'delete');
+
       (customerRepository.findOneById as jest.Mock).mockResolvedValue(null);
 
       await expect(customerService.delete(id)).rejects.toThrow(
         BadRequestException,
       );
+      expect(customerRepository.delete).not.toHaveBeenCalled();
+      expect(identityService.delete).not.toHaveBeenCalled();
     });
 
     it('should delete a customer', async () => {
@@ -196,6 +251,7 @@ describe('CustomerService', () => {
       await customerService.delete(id);
 
       expect(customerRepository.delete).toHaveBeenCalledWith(id);
+      expect(identityService.delete).toHaveBeenCalled();
     });
   });
 });

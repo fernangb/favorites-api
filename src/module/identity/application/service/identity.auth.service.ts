@@ -23,22 +23,18 @@ export class IdentityAuthService {
 
   @Transactional()
   async signUp({ name, email, password }: SignUpRequest): Promise<void> {
-    try {
-      await this.customerService.create({ name, email });
+    await this.customerService.create({ name, email });
 
-      const customer = await this.customerService.findOneByEmail(email);
+    const customer = await this.customerService.findOneByEmail(email);
 
-      const hashedPassword = await this.hashService.create(password);
+    const hashedPassword = await this.hashService.create(password);
 
-      const identity = new IdentityEntity({
-        customer,
-        password: hashedPassword,
-      });
+    const identity = new IdentityEntity({
+      customer,
+      password: hashedPassword,
+    });
 
-      return this.repository.create(identity);
-    } catch (error) {
-      throw new BadRequestException('Cannot add customer: ', error.message);
-    }
+    await this.repository.create(identity);
   }
 
   async signIn({ email, password }: SignInRequest): Promise<SignInResponse> {

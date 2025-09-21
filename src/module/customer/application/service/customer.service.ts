@@ -49,10 +49,9 @@ export class CustomerService {
     return this.repository.findOneByEmail(email);
   }
 
-  @Transactional()
   async update(
     id: string,
-    { name, email, password }: UpdateCustomerRequest,
+    { name, email }: UpdateCustomerRequest,
   ): Promise<void> {
     try {
       const hasCustomer = await this.repository.findOneById(id);
@@ -68,7 +67,6 @@ export class CustomerService {
       });
 
       await this.repository.update(updatedCustomer);
-      await this.identityService.setPassword(id, password);
     } catch (error) {
       throw new BadRequestException('Cannot update customer: ', error.message);
     }
@@ -76,15 +74,11 @@ export class CustomerService {
 
   @Transactional()
   async delete(id: string): Promise<void> {
-    try {
-      const hasCustomer = await this.repository.findOneById(id);
+    const hasCustomer = await this.repository.findOneById(id);
 
-      if (!hasCustomer) throw new BadRequestException('Customer not found');
+    if (!hasCustomer) throw new BadRequestException('Customer not found');
 
-      await this.identityService.delete(id);
-      await this.repository.delete(id);
-    } catch (error) {
-      throw new BadRequestException('Cannot delete customer: ', error.message);
-    }
+    await this.identityService.delete(id);
+    await this.repository.delete(id);
   }
 }

@@ -29,7 +29,7 @@ export class IdentityController {
     type: DefaultErrorResponse,
   })
   async signUp(@Body() dto: SignUpRequest) {
-    return this.service.signUp(dto);
+    await this.service.signUp(dto);
   }
 
   @Post('/signIn')

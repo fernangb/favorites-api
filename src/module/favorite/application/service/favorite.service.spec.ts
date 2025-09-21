@@ -63,8 +63,8 @@ describe('FavoriteService', () => {
 
   describe('add', () => {
     it('should throw bad request if customer not exists', async () => {
+      const customerId = '1';
       const dto = {
-        customerId: '1',
         productId: '123',
       };
 
@@ -75,9 +75,9 @@ describe('FavoriteService', () => {
       jest.spyOn(favoriteRepository, 'findByCustomerId');
       jest.spyOn(favoriteRepository, 'create');
 
-      await expect(customerFavoriteProductService.add(dto)).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        customerFavoriteProductService.add(customerId, dto),
+      ).rejects.toThrow(BadRequestException);
 
       expect(customerService.findOneById).toHaveBeenCalled();
       expect(productService.findOneById).not.toHaveBeenCalled();
@@ -86,13 +86,13 @@ describe('FavoriteService', () => {
     });
 
     it('should throw bad request if product not exists', async () => {
+      const customerId = '1';
       const dto = {
-        customerId: '1',
         productId: '123',
       };
 
       const customer = new CustomerEntity({
-        id: dto.customerId,
+        id: customerId,
         name: 'John Doe',
         email: 'johndoe@email.com',
       });
@@ -105,9 +105,9 @@ describe('FavoriteService', () => {
       jest.spyOn(favoriteRepository, 'findByCustomerId');
       jest.spyOn(favoriteRepository, 'create');
 
-      await expect(customerFavoriteProductService.add(dto)).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        customerFavoriteProductService.add(customerId, dto),
+      ).rejects.toThrow(BadRequestException);
 
       expect(customerService.findOneById).toHaveBeenCalled();
       expect(productService.findOneById).toHaveBeenCalled();
@@ -116,13 +116,13 @@ describe('FavoriteService', () => {
     });
 
     it('should throw bad request if product is already favorite', async () => {
+      const customerId = '1';
       const dto = {
-        customerId: '1',
         productId: '123',
       };
 
       const customer = new CustomerEntity({
-        id: dto.customerId,
+        id: customerId,
         name: 'John Doe',
         email: 'johndoe@email.com',
       });
@@ -152,9 +152,9 @@ describe('FavoriteService', () => {
       jest.spyOn(favoriteRepository, 'findByCustomerId');
       jest.spyOn(favoriteRepository, 'create');
 
-      await expect(customerFavoriteProductService.add(dto)).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        customerFavoriteProductService.add(customerId, dto),
+      ).rejects.toThrow(BadRequestException);
 
       expect(customerService.findOneById).toHaveBeenCalled();
       expect(productService.findOneById).toHaveBeenCalled();
@@ -163,13 +163,13 @@ describe('FavoriteService', () => {
     });
 
     it('should add a favorite product', async () => {
+      const customerId = '1';
       const dto = {
-        customerId: '1',
         productId: '123',
       };
 
       const customer = new CustomerEntity({
-        id: dto.customerId,
+        id: customerId,
         name: 'John Doe',
         email: 'johndoe@email.com',
       });
@@ -192,7 +192,7 @@ describe('FavoriteService', () => {
       jest.spyOn(favoriteRepository, 'findByCustomerId');
       jest.spyOn(favoriteRepository, 'create');
 
-      await customerFavoriteProductService.add(dto);
+      await customerFavoriteProductService.add(customerId, dto);
 
       expect(favoriteRepository.create).toHaveBeenCalledWith(
         expect.objectContaining({ customer, productId: dto.productId }),

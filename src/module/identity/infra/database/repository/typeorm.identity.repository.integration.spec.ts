@@ -12,6 +12,7 @@ describe('TypeOrmIdentityRepository (integration)', () => {
   let identityRepository: TypeOrmIdentityRepository;
   let typeOrmRepository: Repository<TypeOrmIdentityModel>;
   let typeOrmCustomerRepository: Repository<TypeOrmCustomerModel>;
+  let customerRepository: TypeOrmCustomerRepository;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -38,6 +39,9 @@ describe('TypeOrmIdentityRepository (integration)', () => {
     typeOrmCustomerRepository = module.get<Repository<TypeOrmCustomerModel>>(
       getRepositoryToken(TypeOrmCustomerModel),
     );
+    customerRepository = module.get<TypeOrmCustomerRepository>(
+      TypeOrmCustomerRepository,
+    );
   });
 
   afterEach(async () => {
@@ -52,7 +56,7 @@ describe('TypeOrmIdentityRepository (integration)', () => {
       const password = '123456';
       const now = new Date();
 
-      const customerEntity = new CustomerEntity({
+      const customer = new CustomerEntity({
         id: customerId,
         name: 'John Doe',
         email: 'johndoe@email.com',
@@ -60,31 +64,25 @@ describe('TypeOrmIdentityRepository (integration)', () => {
         updatedAt: now,
       });
 
-      await typeOrmCustomerRepository.save(customerEntity);
-
       const identity = new IdentityEntity({
         id,
-        customer: customerEntity,
+        customer,
         password,
         createdAt: now,
         updatedAt: now,
       });
 
-      await typeOrmRepository.save(
-        typeOrmRepository.create({
-          id: identity.id,
-          customer: identity.customer,
-          password: identity.password,
-        }),
-      );
+      await customerRepository.create(customer);
+      await identityRepository.create(identity);
 
       const data = await typeOrmRepository.findOne({
         where: { id },
       });
 
       expect(data).toBeDefined();
-      expect(data.id).toBe(identity.id);
-      expect(data.customerId).toBe(customerId);
+      expect(data.customer.id).toBe(customer.id);
+      expect(data.customer.name).toBe(customer.name);
+      expect(data.customer.email).toBe(customer.email);
       expect(data.password).toBe(password);
     });
   });
@@ -134,6 +132,103 @@ describe('TypeOrmIdentityRepository (integration)', () => {
       expect(result).toBeInstanceOf(IdentityEntity);
       expect(result.customer.id).toBe(customerEntity.id);
       expect(result.password).toBe(password);
+    });
+  });
+
+  describe('setPassword', () => {
+    it('should set password', async () => {
+      const id = '1';
+      const customerId = '123';
+      const password = '123456';
+      const newPassword = '123456';
+      const now = new Date();
+
+      const customer = new CustomerEntity({
+        id: customerId,
+        name: 'John Doe',
+        email: 'johndoe@email.com',
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      const identity = new IdentityEntity({
+        id,
+        customer,
+        password,
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      await customerRepository.create(customer);
+      await identityRepository.create(identity);
+
+      const data = await typeOrmRepository.findOne({
+        where: { id },
+      });
+
+      expect(data).toBeDefined();
+      expect(data.customer.id).toBe(customer.id);
+      expect(data.customer.name).toBe(customer.name);
+      expect(data.customer.email).toBe(customer.email);
+      expect(data.password).toBe(password);
+
+      await identityRepository.setPassword(customer.id, newPassword);
+
+      const updatedData = await typeOrmRepository.findOne({
+        where: { id },
+      });
+
+      expect(updatedData).toBeDefined();
+      expect(updatedData.customer.id).toBe(customer.id);
+      expect(updatedData.customer.name).toBe(customer.name);
+      expect(updatedData.customer.email).toBe(customer.email);
+      expect(updatedData.password).toBe(newPassword);
+    });
+  });
+
+  describe('delete', () => {
+    it('should delete an identity', async () => {
+      const id = '1';
+      const customerId = '123';
+      const password = '123456';
+      const now = new Date();
+
+      const customer = new CustomerEntity({
+        id: customerId,
+        name: 'John Doe',
+        email: 'johndoe@email.com',
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      const identity = new IdentityEntity({
+        id,
+        customer,
+        password,
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      await customerRepository.create(customer);
+      await identityRepository.create(identity);
+
+      const data = await typeOrmRepository.findOne({
+        where: { id },
+      });
+
+      expect(data).toBeDefined();
+      expect(data.customer.id).toBe(customer.id);
+      expect(data.customer.name).toBe(customer.name);
+      expect(data.customer.email).toBe(customer.email);
+      expect(data.password).toBe(password);
+
+      await identityRepository.delete(identity.id);
+
+      const deletedData = await typeOrmRepository.findOne({
+        where: { id },
+      });
+
+      expect(deletedData).toBeNull();
     });
   });
 });
