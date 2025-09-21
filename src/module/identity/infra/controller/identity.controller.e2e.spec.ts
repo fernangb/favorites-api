@@ -79,7 +79,7 @@ describe('IdentityController (e2e)', () => {
   });
 
   describe('sign up', () => {
-    it('/identity/sign_up (POST) should return success on valid input', async () => {
+    it('/identity/signUp (POST) should return success on valid input', async () => {
       const dto: SignUpRequest = {
         name: 'John Doe',
         email: 'john@example.com',
@@ -89,7 +89,7 @@ describe('IdentityController (e2e)', () => {
       const spyService = jest.spyOn(service, 'signUp');
 
       const response = await request(app.getHttpServer())
-        .post('/identity/sign_up')
+        .post('/identity/signUp')
         .send(dto)
         .expect(201);
 
@@ -104,7 +104,7 @@ describe('IdentityController (e2e)', () => {
       );
     });
 
-    it('/identity/sign_up (POST) should return 400 if customer already exists', async () => {
+    it('/identity/signUp (POST) should return 400 if customer already exists', async () => {
       const dto: SignUpRequest = {
         name: 'John Doe',
         email: 'john@example.com',
@@ -114,7 +114,7 @@ describe('IdentityController (e2e)', () => {
       await seedUser(dto, customerRepository, identityRepository);
 
       await request(app.getHttpServer())
-        .post('/identity/sign_up')
+        .post('/identity/signUp')
         .send(dto)
         .expect(400);
     });

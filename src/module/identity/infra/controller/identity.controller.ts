@@ -18,7 +18,7 @@ import {
 export class IdentityController {
   constructor(private readonly service: IdentityService) {}
 
-  @Post('sign_up')
+  @Post('signUp')
   @ApiOperation({ summary: 'Create customer' })
   @ApiResponse({
     status: 201,
@@ -32,7 +32,7 @@ export class IdentityController {
     return this.service.signUp(dto);
   }
 
-  @Post('/sign_in')
+  @Post('/signIn')
   @ApiOperation({ summary: 'Sign in into the API' })
   @ApiResponse({
     status: 201,

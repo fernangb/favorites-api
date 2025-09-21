@@ -6,11 +6,10 @@ export default class TokenService {
   validate(token: string): boolean {
     if (!token) throw new BadRequestException('Invalid token');
 
-    const jwt = AuthConfig.getJWT();
+    const { secret } = AuthConfig.getJWT();
 
     try {
-      const decoded = verify(token, jwt.secret);
-
+      const decoded = verify(token, secret);
       if (!decoded) throw new BadRequestException('Invalid token');
       return true;
     } catch {
@@ -18,11 +17,11 @@ export default class TokenService {
     }
   }
 
-  create(userId: string): string {
+  create(customerId: string): string {
     const { secret, expiresIn } = AuthConfig.getJWT();
 
     return sign({}, secret, {
-      subject: userId,
+      subject: String(customerId),
       expiresIn,
     });
   }

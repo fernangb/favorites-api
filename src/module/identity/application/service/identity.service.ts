@@ -45,7 +45,7 @@ export class IdentityService {
 
     if (!isValidPassword) throw new BadRequestException('Invalid credentials');
 
-    const token = this.tokenService.create(identity.id);
+    const token = this.tokenService.create(identity.customer.id);
 
     return {
       customer: identity.customer,

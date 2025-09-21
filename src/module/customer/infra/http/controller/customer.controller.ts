@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { CustomerService } from '../../../application/service/customer.service';
 import {
@@ -19,6 +20,8 @@ import { DefaultErrorResponse } from '../../../../shared/error/default.error';
 import { FindCustomerResponse } from '../../../../../module/customer/application/dto/find-customer.dto';
 import { CustomerEntity } from '../../../../../module/customer/domain/entity/customer.entity';
 import { UpdateCustomerRequest } from '../../../../../module/customer/application/dto/update-customer.dto';
+import { AuthorizationGuard } from 'src/module/shared/module/auth/guard/authorization.guard';
+import { AuthenticationGuard } from 'src/module/shared/module/auth/guard/authentication.guard';
 
 @Controller('customers')
 @ApiTags('Customers')
@@ -51,6 +54,7 @@ export class CustomerController {
     description: 'Some data is invalid',
     type: DefaultErrorResponse,
   })
+  @UseGuards(AuthenticationGuard, AuthorizationGuard)
   async findOneById(@Param('id') id: string): Promise<CustomerEntity> {
     return this.service.findOneById(id);
   }
