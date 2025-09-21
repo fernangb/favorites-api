@@ -12,6 +12,7 @@ describe('TypeOrmFavoriteRepository (integration)', () => {
   let favoriteRepository: TypeOrmFavoriteRepository;
   let typeOrmRepository: Repository<TypeOrmFavoriteModel>;
   let typeOrmCustomerRepository: Repository<TypeOrmCustomerModel>;
+  let customerRepository: TypeOrmCustomerRepository;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -38,6 +39,9 @@ describe('TypeOrmFavoriteRepository (integration)', () => {
     typeOrmCustomerRepository = module.get<Repository<TypeOrmCustomerModel>>(
       getRepositoryToken(TypeOrmCustomerModel),
     );
+    customerRepository = module.get<TypeOrmCustomerRepository>(
+      TypeOrmCustomerRepository,
+    );
   });
 
   afterEach(async () => {
@@ -47,11 +51,11 @@ describe('TypeOrmFavoriteRepository (integration)', () => {
 
   describe('create', () => {
     it('should create a favorite entity', async () => {
-      const id = '1';
-      const customerId = '123';
+      const id = '123';
       const productId = '12345';
+      const customerId = '1';
 
-      const customerEntity = new CustomerEntity({
+      const customer = new CustomerEntity({
         id: customerId,
         name: 'John Doe',
         email: 'johndoe@email.com',
@@ -59,31 +63,22 @@ describe('TypeOrmFavoriteRepository (integration)', () => {
         updatedAt: new Date(),
       });
 
-      await typeOrmCustomerRepository.save(customerEntity);
-
       const favorite = new FavoriteEntity({
         id,
-        customer: customerEntity,
+        customer,
         productId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
       });
 
-      await typeOrmRepository.save(
-        typeOrmRepository.create({
-          id: favorite.id,
-          customer: favorite.customer,
-          productId: favorite.productId,
-        }),
-      );
+      await customerRepository.create(customer);
+      await favoriteRepository.create(favorite);
 
       const data = await typeOrmRepository.findOne({
         where: { id },
       });
-
       expect(data).toBeDefined();
-      expect(data.id).toBe(favorite.id);
-      expect(data.customerId).toBe(customerId);
+      expect(data.customer.id).toBe(customer.id);
+      expect(data.customer.name).toBe(customer.name);
+      expect(data.customer.email).toBe(customer.email);
       expect(data.productId).toBe(productId);
     });
   });
@@ -91,8 +86,7 @@ describe('TypeOrmFavoriteRepository (integration)', () => {
   describe('findByCustomerId', () => {
     it('should not find a favorite if customer has none', async () => {
       const customerId = '123';
-      const result =
-        await favoriteRepository.findByCustomerId(customerId);
+      const result = await favoriteRepository.findByCustomerId(customerId);
 
       expect(result).toEqual([]);
     });
@@ -128,8 +122,7 @@ describe('TypeOrmFavoriteRepository (integration)', () => {
         }),
       );
 
-      const result =
-        await favoriteRepository.findByCustomerId(customerId);
+      const result = await favoriteRepository.findByCustomerId(customerId);
 
       expect(result.length).toBe(1);
       expect(result[0]).toBeInstanceOf(FavoriteEntity);
@@ -142,10 +135,7 @@ describe('TypeOrmFavoriteRepository (integration)', () => {
     it('should not find a favorite item', async () => {
       const customerId = '123';
       const productId = '123';
-      const result = await favoriteRepository.findByItem(
-        customerId,
-        productId,
-      );
+      const result = await favoriteRepository.findByItem(customerId, productId);
 
       expect(result).toBeNull();
     });
@@ -220,10 +210,7 @@ describe('TypeOrmFavoriteRepository (integration)', () => {
         }),
       );
 
-      const result = await favoriteRepository.findByItem(
-        customerId,
-        productId,
-      );
+      const result = await favoriteRepository.findByItem(customerId, productId);
       expect(result).toBeInstanceOf(FavoriteEntity);
       expect(result.customer.id).toBe(customerId);
       expect(result.productId).toBe(productId);

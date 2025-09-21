@@ -81,13 +81,15 @@ describe('TypeOrmCustomerRepository (integration)', () => {
         updatedAt: now,
       });
 
-      await typeOrmRepository.save(typeOrmRepository.create({
-        id: customer.id,
-        name: customer.name,
-        email: customer.email,
-        createdAt: customer.createdAt,
-        updatedAt: customer.updatedAt
-      }));
+      await typeOrmRepository.save(
+        typeOrmRepository.create({
+          id: customer.id,
+          name: customer.name,
+          email: customer.email,
+          createdAt: customer.createdAt,
+          updatedAt: customer.updatedAt,
+        }),
+      );
 
       const result = await customerRepository.findOneByEmail(email);
 
@@ -115,13 +117,15 @@ describe('TypeOrmCustomerRepository (integration)', () => {
         updatedAt: now,
       });
 
-      await typeOrmRepository.save(typeOrmRepository.create({
-        id: customer.id,
-        name: customer.name,
-        email: customer.email,
-        createdAt: customer.createdAt,
-        updatedAt: customer.updatedAt
-      }));
+      await typeOrmRepository.save(
+        typeOrmRepository.create({
+          id: customer.id,
+          name: customer.name,
+          email: customer.email,
+          createdAt: customer.createdAt,
+          updatedAt: customer.updatedAt,
+        }),
+      );
 
       const result = await customerRepository.findOneById(id);
 
@@ -147,13 +151,15 @@ describe('TypeOrmCustomerRepository (integration)', () => {
         updatedAt: now,
       });
 
-      await typeOrmRepository.save(typeOrmRepository.create({
-        id: customer.id,
-        name: customer.name,
-        email: customer.email,
-        createdAt: customer.createdAt,
-        updatedAt: customer.updatedAt
-      }));
+      await typeOrmRepository.save(
+        typeOrmRepository.create({
+          id: customer.id,
+          name: customer.name,
+          email: customer.email,
+          createdAt: customer.createdAt,
+          updatedAt: customer.updatedAt,
+        }),
+      );
 
       const result = await customerRepository.findAll();
 
@@ -162,7 +168,7 @@ describe('TypeOrmCustomerRepository (integration)', () => {
     });
   });
 
-   describe('update', () => {
+  describe('update', () => {
     it('should update a customer', async () => {
       const now = new Date();
       const id = '1';
@@ -175,17 +181,19 @@ describe('TypeOrmCustomerRepository (integration)', () => {
         updatedAt: now,
       });
 
-      await typeOrmRepository.save(typeOrmRepository.create({
-        id: customer.id,
-        name: customer.name,
-        email: customer.email,
-        createdAt: customer.createdAt,
-        updatedAt: customer.updatedAt
-      }));
+      await typeOrmRepository.save(
+        typeOrmRepository.create({
+          id: customer.id,
+          name: customer.name,
+          email: customer.email,
+          createdAt: customer.createdAt,
+          updatedAt: customer.updatedAt,
+        }),
+      );
 
-       const oldCustomer = await customerRepository.findOneById(id);
-       expect(oldCustomer.name).toBe(customer.name);
-       expect(oldCustomer.email).toBe(customer.email);
+      const oldCustomer = await customerRepository.findOneById(id);
+      expect(oldCustomer.name).toBe(customer.name);
+      expect(oldCustomer.email).toBe(customer.email);
 
       const updatedCustomer = new CustomerEntity({
         id,
@@ -200,7 +208,7 @@ describe('TypeOrmCustomerRepository (integration)', () => {
       const newCustomer = await customerRepository.findOneById(id);
       expect(newCustomer.name).toBe(updatedCustomer.name);
       expect(newCustomer.email).toBe(updatedCustomer.email);
-      
+
       expect(oldCustomer.id).toBe(newCustomer.id);
       expect(oldCustomer.name).not.toBe(newCustomer.name);
       expect(oldCustomer.email).not.toBe(newCustomer.email);
@@ -220,17 +228,19 @@ describe('TypeOrmCustomerRepository (integration)', () => {
         updatedAt: now,
       });
 
-      await typeOrmRepository.save(typeOrmRepository.create({
-        id: customer.id,
-        name: customer.name,
-        email: customer.email,
-        createdAt: customer.createdAt,
-        updatedAt: customer.updatedAt
-      }));
+      await typeOrmRepository.save(
+        typeOrmRepository.create({
+          id: customer.id,
+          name: customer.name,
+          email: customer.email,
+          createdAt: customer.createdAt,
+          updatedAt: customer.updatedAt,
+        }),
+      );
 
-       const oldCustomer = await customerRepository.findOneById(id);
-       expect(oldCustomer.name).toBe(customer.name);
-       expect(oldCustomer.email).toBe(customer.email);
+      const oldCustomer = await customerRepository.findOneById(id);
+      expect(oldCustomer.name).toBe(customer.name);
+      expect(oldCustomer.email).toBe(customer.email);
 
       await customerRepository.delete(id);
 

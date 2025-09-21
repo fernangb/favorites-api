@@ -1,16 +1,25 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { CreateCustomerRequest } from '../dto/create-customer.dto';
 import { CustomerEntity } from '../../domain/entity/customer.entity';
 import { TypeOrmCustomerRepository } from '../../infra/database/repository/typeorm.customer.repository';
 import { RepositoryEnum } from '../../../../module/shared/enum/repository.enum';
 import { FindCustomerResponse } from '../dto/find-customer.dto';
 import { UpdateCustomerRequest } from '../dto/update-customer.dto';
+import { IdentityService } from '../../../../module/identity/application/service/identity.service';
+import { Transactional } from 'typeorm-transactional';
 
 @Injectable()
 export class CustomerService {
   constructor(
     @Inject(RepositoryEnum.CUSTOMER)
     private readonly repository: TypeOrmCustomerRepository,
+    @Inject(forwardRef(() => IdentityService))
+    private readonly identityService: IdentityService,
   ) {}
 
   async create({ name, email }: CreateCustomerRequest): Promise<void> {
@@ -36,30 +45,40 @@ export class CustomerService {
     return this.repository.findOneById(id);
   }
 
+  async findOneByEmail(email: string): Promise<CustomerEntity> {
+    return this.repository.findOneByEmail(email);
+  }
+
   async update(
     id: string,
     { name, email }: UpdateCustomerRequest,
   ): Promise<void> {
-    const hasCustomer = await this.repository.findOneById(id);
+    try {
+      const hasCustomer = await this.repository.findOneById(id);
 
-    if (!hasCustomer) throw new BadRequestException('Customer not found');
+      if (!hasCustomer) throw new BadRequestException('Customer not found');
 
-    const customer = new CustomerEntity({
-      id,
-      name,
-      email,
-      createdAt: hasCustomer.createdAt,
-      updatedAt: new Date(),
-    });
+      const updatedCustomer = new CustomerEntity({
+        id,
+        name,
+        email,
+        createdAt: hasCustomer.createdAt,
+        updatedAt: new Date(),
+      });
 
-    await this.repository.update(customer);
+      await this.repository.update(updatedCustomer);
+    } catch (error) {
+      throw new BadRequestException('Cannot update customer: ', error.message);
+    }
   }
 
+  @Transactional()
   async delete(id: string): Promise<void> {
     const hasCustomer = await this.repository.findOneById(id);
 
     if (!hasCustomer) throw new BadRequestException('Customer not found');
 
+    await this.identityService.delete(id);
     await this.repository.delete(id);
   }
 }

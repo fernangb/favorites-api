@@ -7,10 +7,12 @@ import { FavoriteService } from '../favorite/application/service/favorite.servic
 import { TypeOrmFavoriteRepository } from '../favorite/infra/database/repository/typeorm.favorite.repository';
 import { CatalogModule } from '../catalog/catalog.module';
 import { CustomerModule } from '../customer/customer.module';
+import { AuthModule } from '../shared/module/auth/auth.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([TypeOrmFavoriteModel]),
+    AuthModule,
     CatalogModule,
     CustomerModule,
   ],

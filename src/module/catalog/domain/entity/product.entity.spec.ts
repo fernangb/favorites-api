@@ -57,4 +57,32 @@ describe('ProductEntity', () => {
     expect(product.title).toEqual(title);
     expect(product.reviewScore).toEqual(reviewScore);
   });
+
+  it('should create a product without id', () => {
+    const props = {
+      price: 10,
+      image: 'fake image',
+      brand: 'Fake brand',
+      title: 'Fake Title',
+      reviewScore: 4.5,
+    };
+
+    const { price, image, brand, title, reviewScore } = props;
+
+    const product = new ProductEntity({
+      price,
+      image,
+      brand,
+      title,
+      reviewScore,
+    });
+
+    expect(product).toBeInstanceOf(ProductEntity);
+    expect(product.id).toBeDefined();
+    expect(product.price).toBe(price);
+    expect(product.image).toBe(image);
+    expect(product.brand).toEqual(brand);
+    expect(product.title).toEqual(title);
+    expect(product.reviewScore).toEqual(reviewScore);
+  });
 });

@@ -63,8 +63,8 @@ describe('FavoriteService', () => {
 
   describe('add', () => {
     it('should throw bad request if customer not exists', async () => {
+      const customerId = '1';
       const dto = {
-        customerId: '1',
         productId: '123',
       };
 
@@ -75,26 +75,24 @@ describe('FavoriteService', () => {
       jest.spyOn(favoriteRepository, 'findByCustomerId');
       jest.spyOn(favoriteRepository, 'create');
 
-      await expect(customerFavoriteProductService.add(dto)).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        customerFavoriteProductService.add(customerId, dto),
+      ).rejects.toThrow(BadRequestException);
 
       expect(customerService.findOneById).toHaveBeenCalled();
       expect(productService.findOneById).not.toHaveBeenCalled();
-      expect(
-        favoriteRepository.findByCustomerId,
-      ).not.toHaveBeenCalled();
+      expect(favoriteRepository.findByCustomerId).not.toHaveBeenCalled();
       expect(favoriteRepository.create).not.toHaveBeenCalled();
     });
 
     it('should throw bad request if product not exists', async () => {
+      const customerId = '1';
       const dto = {
-        customerId: '1',
         productId: '123',
       };
 
       const customer = new CustomerEntity({
-        id: dto.customerId,
+        id: customerId,
         name: 'John Doe',
         email: 'johndoe@email.com',
       });
@@ -107,26 +105,24 @@ describe('FavoriteService', () => {
       jest.spyOn(favoriteRepository, 'findByCustomerId');
       jest.spyOn(favoriteRepository, 'create');
 
-      await expect(customerFavoriteProductService.add(dto)).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        customerFavoriteProductService.add(customerId, dto),
+      ).rejects.toThrow(BadRequestException);
 
       expect(customerService.findOneById).toHaveBeenCalled();
       expect(productService.findOneById).toHaveBeenCalled();
-      expect(
-        favoriteRepository.findByCustomerId,
-      ).not.toHaveBeenCalled();
+      expect(favoriteRepository.findByCustomerId).not.toHaveBeenCalled();
       expect(favoriteRepository.create).not.toHaveBeenCalled();
     });
 
     it('should throw bad request if product is already favorite', async () => {
+      const customerId = '1';
       const dto = {
-        customerId: '1',
         productId: '123',
       };
 
       const customer = new CustomerEntity({
-        id: dto.customerId,
+        id: customerId,
         name: 'John Doe',
         email: 'johndoe@email.com',
       });
@@ -147,35 +143,33 @@ describe('FavoriteService', () => {
 
       (customerService.findOneById as jest.Mock).mockResolvedValue(customer);
       (productService.findOneById as jest.Mock).mockResolvedValue(product);
-      (
-        favoriteRepository.findByCustomerId as jest.Mock
-      ).mockResolvedValue([favorite]);
+      (favoriteRepository.findByCustomerId as jest.Mock).mockResolvedValue([
+        favorite,
+      ]);
 
       jest.spyOn(customerService, 'findOneById');
       jest.spyOn(productService, 'findOneById');
       jest.spyOn(favoriteRepository, 'findByCustomerId');
       jest.spyOn(favoriteRepository, 'create');
 
-      await expect(customerFavoriteProductService.add(dto)).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        customerFavoriteProductService.add(customerId, dto),
+      ).rejects.toThrow(BadRequestException);
 
       expect(customerService.findOneById).toHaveBeenCalled();
       expect(productService.findOneById).toHaveBeenCalled();
-      expect(
-        favoriteRepository.findByCustomerId,
-      ).toHaveBeenCalled();
+      expect(favoriteRepository.findByCustomerId).toHaveBeenCalled();
       expect(favoriteRepository.create).not.toHaveBeenCalled();
     });
 
     it('should add a favorite product', async () => {
+      const customerId = '1';
       const dto = {
-        customerId: '1',
         productId: '123',
       };
 
       const customer = new CustomerEntity({
-        id: dto.customerId,
+        id: customerId,
         name: 'John Doe',
         email: 'johndoe@email.com',
       });
@@ -191,16 +185,14 @@ describe('FavoriteService', () => {
 
       (customerService.findOneById as jest.Mock).mockResolvedValue(customer);
       (productService.findOneById as jest.Mock).mockResolvedValue(product);
-      (
-        favoriteRepository.findByCustomerId as jest.Mock
-      ).mockResolvedValue([]);
+      (favoriteRepository.findByCustomerId as jest.Mock).mockResolvedValue([]);
 
       jest.spyOn(customerService, 'findOneById');
       jest.spyOn(productService, 'findOneById');
       jest.spyOn(favoriteRepository, 'findByCustomerId');
       jest.spyOn(favoriteRepository, 'create');
 
-      await customerFavoriteProductService.add(dto);
+      await customerFavoriteProductService.add(customerId, dto);
 
       expect(favoriteRepository.create).toHaveBeenCalledWith(
         expect.objectContaining({ customer, productId: dto.productId }),
@@ -208,9 +200,7 @@ describe('FavoriteService', () => {
 
       expect(customerService.findOneById).toHaveBeenCalled();
       expect(productService.findOneById).toHaveBeenCalled();
-      expect(
-        favoriteRepository.findByCustomerId,
-      ).toHaveBeenCalled();
+      expect(favoriteRepository.findByCustomerId).toHaveBeenCalled();
       expect(favoriteRepository.create).toHaveBeenCalled();
     });
   });
@@ -229,9 +219,7 @@ describe('FavoriteService', () => {
       ).rejects.toThrow(BadRequestException);
 
       expect(customerService.findOneById).toHaveBeenCalled();
-      expect(
-        favoriteRepository.findByCustomerId,
-      ).not.toHaveBeenCalled();
+      expect(favoriteRepository.findByCustomerId).not.toHaveBeenCalled();
       expect(productService.find).not.toHaveBeenCalled();
     });
 
@@ -269,9 +257,9 @@ describe('FavoriteService', () => {
 
       (customerService.findOneById as jest.Mock).mockResolvedValue(customer);
       (productService.find as jest.Mock).mockResolvedValue([product]);
-      (
-        favoriteRepository.findByCustomerId as jest.Mock
-      ).mockResolvedValue([favorite]);
+      (favoriteRepository.findByCustomerId as jest.Mock).mockResolvedValue([
+        favorite,
+      ]);
 
       jest.spyOn(customerService, 'findOneById');
       jest.spyOn(favoriteRepository, 'findByCustomerId');
@@ -283,9 +271,7 @@ describe('FavoriteService', () => {
       expect(response.data).toStrictEqual(mockResponse.data);
 
       expect(customerService.findOneById).toHaveBeenCalled();
-      expect(
-        favoriteRepository.findByCustomerId,
-      ).toHaveBeenCalled();
+      expect(favoriteRepository.findByCustomerId).toHaveBeenCalled();
       expect(productService.find).toHaveBeenCalled();
     });
   });
@@ -308,9 +294,7 @@ describe('FavoriteService', () => {
 
       expect(customerService.findOneById).toHaveBeenCalled();
       expect(productService.findOneById).not.toHaveBeenCalled();
-      expect(
-        favoriteRepository.findByItem,
-      ).not.toHaveBeenCalled();
+      expect(favoriteRepository.findByItem).not.toHaveBeenCalled();
       expect(favoriteRepository.delete).not.toHaveBeenCalled();
     });
 
@@ -338,9 +322,7 @@ describe('FavoriteService', () => {
 
       expect(customerService.findOneById).toHaveBeenCalled();
       expect(productService.findOneById).toHaveBeenCalled();
-      expect(
-        favoriteRepository.findByItem,
-      ).not.toHaveBeenCalled();
+      expect(favoriteRepository.findByItem).not.toHaveBeenCalled();
       expect(favoriteRepository.delete).not.toHaveBeenCalled();
     });
 
@@ -365,9 +347,7 @@ describe('FavoriteService', () => {
 
       (customerService.findOneById as jest.Mock).mockResolvedValue(customer);
       (productService.findOneById as jest.Mock).mockResolvedValue(product);
-      (
-        favoriteRepository.findByItem as jest.Mock
-      ).mockResolvedValue(null);
+      (favoriteRepository.findByItem as jest.Mock).mockResolvedValue(null);
 
       jest.spyOn(customerService, 'findOneById');
       jest.spyOn(productService, 'findOneById');
@@ -405,9 +385,7 @@ describe('FavoriteService', () => {
 
       (customerService.findOneById as jest.Mock).mockResolvedValue(customer);
       (productService.findOneById as jest.Mock).mockResolvedValue(product);
-      (
-        favoriteRepository.findByItem as jest.Mock
-      ).mockResolvedValue(null);
+      (favoriteRepository.findByItem as jest.Mock).mockResolvedValue(null);
 
       jest.spyOn(customerService, 'findOneById');
       jest.spyOn(productService, 'findOneById');
@@ -450,9 +428,7 @@ describe('FavoriteService', () => {
 
       (customerService.findOneById as jest.Mock).mockResolvedValue(customer);
       (productService.findOneById as jest.Mock).mockResolvedValue(product);
-      (
-        favoriteRepository.findByItem as jest.Mock
-      ).mockResolvedValue(favorite);
+      (favoriteRepository.findByItem as jest.Mock).mockResolvedValue(favorite);
 
       jest.spyOn(customerService, 'findOneById');
       jest.spyOn(productService, 'findOneById');

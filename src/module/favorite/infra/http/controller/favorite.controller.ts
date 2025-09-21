@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiOperation,
@@ -9,13 +17,15 @@ import { DefaultErrorResponse } from '../../../../shared/error/default.error';
 import { FavoriteService } from '../../../application/service/favorite.service';
 import { AddFavoriteRequest } from '../../../application/dto/add-favorite.dto';
 import { FindFavoriteResponse } from '../../../application/dto/find-favorite.dto';
+import { AuthenticationGuard } from '../../../../shared/module/auth/guard/authentication.guard';
+import { AuthorizationGuard } from '../../../../shared/module/auth/guard/authorization.guard';
 
 @Controller('favorites')
 @ApiTags('Favorites')
 export class FavoriteController {
   constructor(private readonly service: FavoriteService) {}
 
-  @Post('/customers')
+  @Post('/customers/:id')
   @ApiOperation({ summary: 'Add a favorite product to customer' })
   @ApiResponse({
     status: 201,
@@ -25,8 +35,12 @@ export class FavoriteController {
     description: 'Some data is invalid',
     type: DefaultErrorResponse,
   })
-  async add(@Body() dto: AddFavoriteRequest): Promise<void> {
-    await this.service.add(dto);
+  @UseGuards(AuthenticationGuard, AuthorizationGuard)
+  async add(
+    @Param('id') id: string,
+    @Body() dto: AddFavoriteRequest,
+  ): Promise<void> {
+    await this.service.add(id, dto);
   }
 
   @Get('/customers/:id')
@@ -39,6 +53,7 @@ export class FavoriteController {
     description: 'Some data is invalid',
     type: DefaultErrorResponse,
   })
+  @UseGuards(AuthenticationGuard, AuthorizationGuard)
   async findByCustomerId(
     @Param('id') id: string,
   ): Promise<FindFavoriteResponse> {
@@ -54,9 +69,10 @@ export class FavoriteController {
     description: 'Some data is invalid',
     type: DefaultErrorResponse,
   })
-  @Delete('/customers/:customerId/:productId')
+  @UseGuards(AuthenticationGuard, AuthorizationGuard)
+  @Delete('/customers/:id/:productId')
   async delete(
-    @Param('customerId') customerId: string,
+    @Param('id') customerId: string,
     @Param('productId') productId: string,
   ): Promise<void> {
     return this.service.delete(customerId, productId);
