@@ -1,24 +1,21 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { RepositoryEnum } from '../shared/enum/repository.enum';
-import { TypeOrmProductModel } from './infra/database/model/typeorm.product.model';
 import { ProductService } from './application/service/product.service';
-import { TypeOrmProductRepository } from './infra/database/repository/typeorm.product.repository';
 import { ServiceEnum } from '../shared/enum/service.enum';
 import { ProductController } from './infra/http/controller/product.controller';
 import { LogModule } from '../shared/module/log/log.module';
 import { LogService } from '../shared/module/log/log.service';
 import { LogControllerEnum } from '../shared/enum/log.enum';
+import { ProductMock } from './application/mock/product.mock';
+import { ChallengeAPIService } from './infra/http/api/challenge.api.service';
+import { RepositoryEnum } from '../shared/enum/repository.enum';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TypeOrmProductModel]), LogModule],
+  imports: [LogModule, HttpModule],
   controllers: [ProductController],
   providers: [
     ProductService,
-    {
-      provide: RepositoryEnum.PRODUCT,
-      useClass: TypeOrmProductRepository,
-    },
+    ChallengeAPIService,
     {
       provide: ServiceEnum.PRODUCT,
       useClass: ProductService,
@@ -30,6 +27,11 @@ import { LogControllerEnum } from '../shared/enum/log.enum';
         logger.setContext(ProductController.name);
         return logger;
       },
+    },
+    {
+      provide: RepositoryEnum.PRODUCT,
+      useFactory: () =>
+        ProductMock.getProducts(Number(process.env.QUANTITY) || 10),
     },
   ],
   exports: [ServiceEnum.PRODUCT],

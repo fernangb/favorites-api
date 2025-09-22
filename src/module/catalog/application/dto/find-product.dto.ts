@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class FindProductRequest {
   @ApiProperty({ example: 1, default: 1 })
@@ -13,7 +13,7 @@ export class FindProductRequest {
   limit?: number;
 }
 
-export class FindProductResponse {
+export class FindProductItemResponse {
   @ApiProperty({ example: '1' })
   @IsString()
   id: string;
@@ -38,4 +38,10 @@ export class FindProductResponse {
   @IsOptional()
   @IsString()
   reviewScore?: number;
+}
+
+export class FindProductResponse {
+  @ApiProperty()
+  @IsArray()
+  data: FindProductItemResponse[];
 }

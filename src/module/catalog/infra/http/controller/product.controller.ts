@@ -61,9 +61,7 @@ export class ProductController {
     description: 'Some data is invalid',
     type: DefaultErrorResponse,
   })
-  async find(
-    @Query() query: FindProductRequest,
-  ): Promise<FindProductResponse[]> {
+  async find(@Query() query: FindProductRequest): Promise<FindProductResponse> {
     try {
       const { page, limit } = query;
 

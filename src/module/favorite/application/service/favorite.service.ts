@@ -59,7 +59,7 @@ export class FavoriteService {
 
     const products = await this.productService.find();
 
-    const favoriteProducts = products.filter((product) =>
+    const favoriteProducts = products.data.filter((product) =>
       favoritesIds.includes(product.id),
     );
 

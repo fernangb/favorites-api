@@ -3,6 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 import { FindProductByIdResponse } from '../../../application/dto/find-product-by-id.dto';
 import { IProductService } from '../../../domain/service/product.service';
+import { FindProductResponse } from '../../../application/dto/find-product.dto';
 
 @Injectable()
 export class ChallengeAPIService implements IProductService {
@@ -15,10 +16,10 @@ export class ChallengeAPIService implements IProductService {
     return response.data;
   }
 
-  async find(page: number = 1): Promise<FindProductByIdResponse[]> {
+  async find(page: number = 1): Promise<FindProductResponse> {
     const url = `${process.env.CHALLENGE_API}/product/page=${page}`;
     const response = await lastValueFrom(this.httpService.get(url));
 
-    return response.data;
+    return { data: response.data };
   }
 }
