@@ -15,8 +15,8 @@ import {
 import { LogService } from '../../../../module/shared/module/log/log.service';
 import { LogControllerEnum } from '../../../../module/shared/enum/log.enum';
 
-@Controller('identity/v1')
-@ApiTags('Identity')
+@Controller('auth/v1')
+@ApiTags('Auth')
 export class IdentityController {
   constructor(
     private readonly service: IdentityAuthService,

@@ -20,6 +20,6 @@ export class ChallengeAPIService implements IProductService {
     const url = `${process.env.CHALLENGE_API}/product/page=${page}`;
     const response = await lastValueFrom(this.httpService.get(url));
 
-    return { data: response.data };
+    return { data: { products: response.data } };
   }
 }

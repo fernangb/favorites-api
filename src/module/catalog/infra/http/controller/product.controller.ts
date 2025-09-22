@@ -15,7 +15,7 @@ import {
 import { LogService } from '../../../../../module/shared/module/log/log.service';
 import { LogControllerEnum } from '../../../../../module/shared/enum/log.enum';
 
-@Controller('products/v1')
+@Controller('catalog/v1/products/')
 @ApiTags('Products')
 export class ProductController {
   constructor(
@@ -72,6 +72,11 @@ export class ProductController {
       return products;
     } catch (error) {
       this.logger.error('Error', error.message);
+      DefaultErrorResponse.getMessage({
+        message: error.message,
+        statusCode: error.status,
+        error: error.name,
+      });
     }
   }
 }

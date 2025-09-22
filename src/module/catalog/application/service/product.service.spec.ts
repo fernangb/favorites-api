@@ -1,88 +1,169 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { RepositoryEnum } from '../../../shared/enum/repository.enum';
 import { ProductService } from './product.service';
-import { IProductRepository } from '../../domain/repository/product.repository';
 import { ProductEntity } from '../../domain/entity/product.entity';
+import { ChallengeAPIService } from '../../infra/http/api/challenge.api.service';
+import { ProductMock } from '../mock/product.mock';
+import { NotFoundException } from '@nestjs/common';
+import { FindProductByIdResponse } from '../dto/find-product-by-id.dto';
+import { FindProductResponse } from '../dto/find-product.dto';
 
 describe('ProductService', () => {
   let productService: ProductService;
-  let productRepository: IProductRepository;
+  let challengeService: ChallengeAPIService;
+  let mockProducts: ProductEntity[];
 
   beforeEach(async () => {
+    mockProducts = ProductMock.getProducts(10);
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ProductService,
         {
-          provide: RepositoryEnum.PRODUCT,
+          provide: ChallengeAPIService,
           useValue: {
             findOneById: jest.fn(),
             find: jest.fn(),
           },
         },
+        {
+          provide: RepositoryEnum.PRODUCT,
+          useValue: mockProducts,
+        },
       ],
     }).compile();
 
     productService = module.get<ProductService>(ProductService);
-    productRepository = module.get<IProductRepository>(RepositoryEnum.PRODUCT);
+    challengeService = module.get<ChallengeAPIService>(ChallengeAPIService);
   });
 
   describe('findOneById', () => {
-    it('should return null if product not found', async () => {
-      const id = '1';
+    it('should throw NotFoundException if product not found and is mocked data', async () => {
+      process.env.IS_MOCKED = 'true';
+      const id = '100';
 
-      (productRepository.findOneById as jest.Mock).mockResolvedValue(null);
+      jest.spyOn(challengeService, 'findOneById');
 
-      const result = await productService.findOneById(id);
-
-      expect(result).toBeNull();
+      await expect(productService.findOneById(id)).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(challengeService.findOneById).not.toHaveBeenCalled();
     });
-    it('should find product by id', async () => {
+
+    it('should throw NotFoundException if product not found and is not mocked data', async () => {
+      process.env.IS_MOCKED = '';
+      const id = '100';
+
+      jest.spyOn(challengeService, 'findOneById');
+
+      (challengeService.findOneById as jest.Mock).mockResolvedValue(null);
+
+      await expect(productService.findOneById(id)).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(challengeService.findOneById).toHaveBeenCalled();
+    });
+
+    it('should find product by id if is mocked data', async () => {
+      process.env.IS_MOCKED = 'true';
       const id = '1';
 
-      const product = new ProductEntity({
+      jest.spyOn(challengeService, 'findOneById');
+
+      const response = await productService.findOneById(id);
+
+      expect(response.id).toBe(id);
+      expect(challengeService.findOneById).not.toHaveBeenCalled();
+    });
+
+    it('should find product by id if is not mocked data', async () => {
+      process.env.IS_MOCKED = '';
+      const id = '1';
+
+      const product = {
         id,
-        price: 10,
-        image: 'fake image',
         brand: 'Fake brand',
-        title: 'Fake Title',
+        image: 'fake-image',
+        price: 10,
+        title: 'Fake title',
         reviewScore: 5,
-      });
+      } as FindProductByIdResponse;
 
-      (productRepository.findOneById as jest.Mock).mockResolvedValue(product);
+      (challengeService.findOneById as jest.Mock).mockResolvedValue(product);
 
-      const result = await productService.findOneById(id);
+      jest.spyOn(challengeService, 'findOneById');
 
-      expect(result).toEqual(product);
+      const response = await productService.findOneById(id);
+
+      expect(response.id).toBe(id);
+      expect(challengeService.findOneById).toHaveBeenCalled();
     });
   });
 
   describe('find', () => {
-    it('should return an empty list if products not found', async () => {
-      const page = 1;
+    it('should return an empty array if is not mocked data', async () => {
+      process.env.IS_MOCKED = '';
 
-      (productRepository.find as jest.Mock).mockResolvedValue([]);
+      jest.spyOn(challengeService, 'find');
+      jest.spyOn(ProductMock, 'getProducts');
 
-      const result = await productService.find(page);
+      (challengeService.find as jest.Mock).mockReturnValue([]);
 
-      expect(result.length).toBe(0);
+      const response = await productService.find();
+
+      expect(response).toEqual([]);
+      expect(challengeService.find).toHaveBeenCalled();
     });
-    it('should find products', async () => {
+
+    it('should find product if is mocked data', async () => {
+      process.env.IS_MOCKED = 'true';
       const page = 1;
+      const limit = 10;
+
+      jest.spyOn(challengeService, 'find');
+      jest.spyOn(ProductMock, 'getProducts');
+
+      const response = await productService.find(page, limit);
+
+      expect(response.data.products.length).toBe(10);
+      expect(challengeService.find).not.toHaveBeenCalled();
+    });
+
+    it('should find product if is not mocked data', async () => {
+      process.env.IS_MOCKED = '';
 
       const product = new ProductEntity({
         id: '1',
-        price: 10,
-        image: 'fake image',
         brand: 'Fake brand',
-        title: 'Fake Title',
+        image: 'fake-image',
+        price: 10,
+        title: 'Fake title',
         reviewScore: 5,
       });
 
-      (productRepository.find as jest.Mock).mockResolvedValue([product]);
+      jest.spyOn(challengeService, 'find');
+      jest.spyOn(ProductMock, 'getProducts');
 
-      const result = await productService.find(page);
+      const mockedResponse = {
+        data: {
+          products: [product],
+        },
+        metadata: {
+          pagination: {
+            limit: 10,
+            page: 1,
+            perPage: 1,
+            total: 1,
+          },
+        },
+      } as FindProductResponse;
 
-      expect(result).toEqual([product]);
+      (challengeService.find as jest.Mock).mockReturnValue(mockedResponse);
+
+      const response = await productService.find();
+
+      expect(response).toStrictEqual(mockedResponse);
+      expect(challengeService.find).toHaveBeenCalled();
     });
   });
 });

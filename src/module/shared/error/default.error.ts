@@ -34,9 +34,6 @@ export class DefaultErrorResponse extends HttpException {
         message,
       },
       statusCode,
-      {
-        cause: message,
-      },
     );
   }
 }

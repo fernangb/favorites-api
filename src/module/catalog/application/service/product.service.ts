@@ -6,7 +6,7 @@ import { ChallengeAPIService } from '../../infra/http/api/challenge.api.service'
 import { ProductEntity } from '../../domain/entity/product.entity';
 import { FindProductResponse } from '../dto/find-product.dto';
 import { RepositoryEnum } from '../../../../module/shared/enum/repository.enum';
-import { Pagination } from 'src/module/shared/pagination/pagination';
+import { Pagination } from '../../../../module/shared/pagination/pagination';
 
 @Injectable()
 export class ProductService implements IProductService {

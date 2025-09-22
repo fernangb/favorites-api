@@ -1,12 +1,23 @@
 import { DefaultErrorResponse } from './default.error';
+import { HttpException } from '@nestjs/common';
 
 describe('DefaultErrorResponse', () => {
-  it('should create a default error response', () => {
-    const errorProps = { statusCode: 400, message: 'Some error happened' };
-    const error = new DefaultErrorResponse(errorProps);
+  it('should throw an HttpException', () => {
+    const props = {
+      statusCode: 400,
+      message: 'Fake Error',
+      error: 'Bad Request',
+    };
 
-    expect(error).toBeInstanceOf(DefaultErrorResponse);
-    expect(error.statusCode).toBe(400);
-    expect(error.message).toBe('Some error happened');
+    try {
+      DefaultErrorResponse.getMessage(props);
+    } catch (err) {
+      expect(err).toBeInstanceOf(HttpException);
+
+      const response = err.getResponse();
+      expect(response.statusCode).toBe(props.statusCode);
+      expect(response.message).toBe(props.message);
+      expect(response.error).toBe(props.error);
+    }
   });
 });

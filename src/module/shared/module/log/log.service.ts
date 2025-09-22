@@ -5,7 +5,7 @@ import { v4 as uuid } from 'uuid';
 export class LogService implements LoggerService {
   private traceId = '';
   private context?: string;
-  private readonly logger = new Logger(LogService.name, { timestamp: true });
+  private logger = new Logger(LogService.name, { timestamp: true });
 
   constructor() {
     this.traceId = uuid();
