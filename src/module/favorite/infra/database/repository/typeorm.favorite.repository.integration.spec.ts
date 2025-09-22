@@ -88,7 +88,7 @@ describe('TypeOrmFavoriteRepository (integration)', () => {
       const customerId = '123';
       const result = await favoriteRepository.findByCustomerId(customerId);
 
-      expect(result).toEqual([]);
+      expect(result).toEqual({ data: [], total: 0 });
     });
 
     it('should find favorites', async () => {
@@ -124,10 +124,10 @@ describe('TypeOrmFavoriteRepository (integration)', () => {
 
       const result = await favoriteRepository.findByCustomerId(customerId);
 
-      expect(result.length).toBe(1);
-      expect(result[0]).toBeInstanceOf(FavoriteEntity);
-      expect(result[0].customer.id).toBe(customerId);
-      expect(result[0].productId).toBe(productId);
+      expect(result.data.length).toBe(1);
+      expect(result.data[0]).toBeInstanceOf(FavoriteEntity);
+      expect(result.data[0].customer.id).toBe(customerId);
+      expect(result.data[0].productId).toBe(productId);
     });
   });
 
@@ -253,14 +253,14 @@ describe('TypeOrmFavoriteRepository (integration)', () => {
       const favoritesBefore =
         await favoriteRepository.findByCustomerId(customerId);
 
-      expect(favoritesBefore.length).toBe(1);
+      expect(favoritesBefore.data.length).toBe(1);
 
       await favoriteRepository.delete(customerId, productId2);
 
       const favoritesAfter =
         await favoriteRepository.findByCustomerId(customerId);
 
-      expect(favoritesAfter.length).toBe(1);
+      expect(favoritesAfter.data.length).toBe(1);
     });
 
     it('should delete a favorite', async () => {
@@ -297,14 +297,14 @@ describe('TypeOrmFavoriteRepository (integration)', () => {
       const favoritesBefore =
         await favoriteRepository.findByCustomerId(customerId);
 
-      expect(favoritesBefore.length).toBe(1);
+      expect(favoritesBefore.data.length).toBe(1);
 
       await favoriteRepository.delete(customerId, productId);
 
       const favoritesAfter =
         await favoriteRepository.findByCustomerId(customerId);
 
-      expect(favoritesAfter.length).toBe(0);
+      expect(favoritesAfter.data.length).toBe(0);
     });
   });
 });

@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Inject, Post } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiOperation,
@@ -12,11 +12,17 @@ import {
   SignInRequest,
   SignInResponse,
 } from '../../application/dto/sign-in.dto';
+import { LogService } from '../../../../module/shared/module/log/log.service';
+import { LogControllerEnum } from '../../../../module/shared/enum/log.enum';
 
-@Controller('identity')
-@ApiTags('Identity')
+@Controller('auth/v1')
+@ApiTags('Auth')
 export class IdentityController {
-  constructor(private readonly service: IdentityAuthService) {}
+  constructor(
+    private readonly service: IdentityAuthService,
+    @Inject(LogControllerEnum.IDENTITY)
+    private readonly logger: LogService,
+  ) {}
 
   @Post('signUp')
   @ApiOperation({ summary: 'Create customer' })
@@ -29,7 +35,20 @@ export class IdentityController {
     type: DefaultErrorResponse,
   })
   async signUp(@Body() dto: SignUpRequest) {
-    await this.service.signUp(dto);
+    try {
+      this.logger.log('Sign up customer', dto.email);
+
+      await this.service.signUp(dto);
+
+      this.logger.log('Customer registered');
+    } catch (error) {
+      this.logger.error('Error', error.message);
+      DefaultErrorResponse.getMessage({
+        message: error.message,
+        statusCode: error.status,
+        error: error.name,
+      });
+    }
   }
 
   @Post('/signIn')
@@ -43,7 +62,22 @@ export class IdentityController {
     description: 'Some data is invalid',
     type: DefaultErrorResponse,
   })
-  async signIn(@Body() authDto: SignInRequest): Promise<SignInResponse> {
-    return this.service.signIn(authDto);
+  async signIn(@Body() dto: SignInRequest): Promise<SignInResponse> {
+    try {
+      this.logger.log('Sign up customer', dto.email);
+
+      const response = await this.service.signIn(dto);
+
+      this.logger.log('Custmoer signed in', dto.email);
+
+      return response;
+    } catch (error) {
+      this.logger.error('Error', error.message);
+      DefaultErrorResponse.getMessage({
+        message: error.message,
+        statusCode: error.status,
+        error: error.name,
+      });
+    }
   }
 }

@@ -20,7 +20,6 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@faker-js/faker": "^10.0.0",
     "@nestjs/axios": "^4.0.1",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^4.0.2",
@@ -88,6 +87,7 @@
       "\\.module\\.ts$",
       "\\.dto\\.ts$",
       "\\.config\\.ts$",
+      "\\.mock\\.ts$",
       "main\\.ts$"
     ],
     "collectCoverageFrom": [
@@ -95,7 +95,9 @@
       "!src/**/*.module.ts",
       "!src/module/**/*.module.ts",
       "!src/module/**/application/dto/*.dto.ts",
+      "!src/module/shared/dto/*.dto.ts",
       "!src/module/identity/config/auth.config.ts",
+      "!src/module/catalog/application/mock/product.mock.ts",
       "!src/main.ts"
     ],
     "coverageDirectory": "coverage",

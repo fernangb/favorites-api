@@ -3,6 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { of } from 'rxjs';
 import { FindProductByIdResponse } from '../../../application/dto/find-product-by-id.dto';
 import { ChallengeAPIService } from './challenge.api.service';
+import { FindProductResponse } from '../../../../../module/catalog/application/dto/find-product.dto';
 
 describe('ChallengeAPIService', () => {
   let service: ChallengeAPIService;
@@ -30,7 +31,7 @@ describe('ChallengeAPIService', () => {
   });
 
   describe('findOneById', () => {
-    it('should call the API and return product data', async () => {
+    it('should return data from API', async () => {
       const mockResponse: FindProductByIdResponse = {
         id: '123',
         title: 'Product 123',
@@ -53,46 +54,27 @@ describe('ChallengeAPIService', () => {
   });
 
   describe('find', () => {
-    it('should call the API and return a list of products', async () => {
-      const mockResponse: FindProductByIdResponse[] = [
-        {
-          id: '1',
-          title: 'Product 1',
-          price: 50,
-          brand: 'Fake brand',
-          image: 'Fake image',
+    it('should find products without page', async () => {
+      const mockResponse: FindProductResponse = {
+        data: {
+          products: [
+            {
+              id: '1',
+              title: 'Product 1',
+              price: 50,
+              brand: 'Fake brand',
+              image: 'Fake image',
+            },
+            {
+              id: '2',
+              title: 'Product 2',
+              price: 150,
+              brand: 'Fake brand',
+              image: 'Fake image',
+            },
+          ],
         },
-        {
-          id: '2',
-          title: 'Product 2',
-          price: 150,
-          brand: 'Fake brand',
-          image: 'Fake image',
-        },
-      ];
-
-      (httpService.get as jest.Mock).mockReturnValue(
-        of({ data: mockResponse }),
-      );
-
-      const result = await service.find(2);
-
-      expect(httpService.get).toHaveBeenCalledWith(
-        `${process.env.CHALLENGE_API}/product/page=2`,
-      );
-      expect(result).toEqual(mockResponse);
-    });
-
-    it('should use page 1 by default if not provided', async () => {
-      const mockResponse: FindProductByIdResponse[] = [
-        {
-          id: '1',
-          title: 'Product 1',
-          price: 50,
-          brand: 'Fake brand',
-          image: 'Fake image',
-        },
-      ];
+      };
 
       (httpService.get as jest.Mock).mockReturnValue(
         of({ data: mockResponse }),
@@ -103,7 +85,43 @@ describe('ChallengeAPIService', () => {
       expect(httpService.get).toHaveBeenCalledWith(
         `${process.env.CHALLENGE_API}/product/page=1`,
       );
-      expect(result).toEqual(mockResponse);
+      expect(result).toEqual({ data: { products: mockResponse } });
+    });
+
+    it('should find products', async () => {
+      const page = 1;
+
+      const mockResponse: FindProductResponse = {
+        data: {
+          products: [
+            {
+              id: '1',
+              title: 'Product 1',
+              price: 50,
+              brand: 'Fake brand',
+              image: 'Fake image',
+            },
+            {
+              id: '2',
+              title: 'Product 2',
+              price: 150,
+              brand: 'Fake brand',
+              image: 'Fake image',
+            },
+          ],
+        },
+      };
+
+      (httpService.get as jest.Mock).mockReturnValue(
+        of({ data: mockResponse }),
+      );
+
+      const result = await service.find(page);
+
+      expect(httpService.get).toHaveBeenCalledWith(
+        `${process.env.CHALLENGE_API}/product/page=${page}`,
+      );
+      expect(result).toEqual({ data: { products: mockResponse } });
     });
   });
 });

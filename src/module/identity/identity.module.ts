@@ -9,6 +9,9 @@ import { RepositoryEnum } from '../shared/enum/repository.enum';
 import { TypeOrmIdentityRepository } from './infra/database/repository/typeorm.identity.repository';
 import { TokenModule } from '../shared/module/token/token.module';
 import { IdentityService } from './application/service/identity.service';
+import { LogModule } from '../shared/module/log/log.module';
+import { LogControllerEnum } from '../shared/enum/log.enum';
+import { LogService } from '../shared/module/log/log.service';
 
 @Module({
   imports: [
@@ -16,6 +19,7 @@ import { IdentityService } from './application/service/identity.service';
     forwardRef(() => CustomerModule),
     HashModule,
     TokenModule,
+    LogModule,
   ],
   controllers: [IdentityController],
   providers: [
@@ -24,6 +28,14 @@ import { IdentityService } from './application/service/identity.service';
     {
       provide: RepositoryEnum.IDENTITY,
       useClass: TypeOrmIdentityRepository,
+    },
+    {
+      provide: LogControllerEnum.IDENTITY,
+      useFactory: () => {
+        const logger = new LogService();
+        logger.setContext(IdentityController.name);
+        return logger;
+      },
     },
   ],
   exports: [IdentityService],

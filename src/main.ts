@@ -8,7 +8,6 @@ import {
 import { DataSource } from 'typeorm';
 import { TypeOrmCustomerModel } from './module/customer/infra/database/model/typeorm.customer.model';
 import { TypeOrmFavoriteModel } from './module/favorite/infra/database/model/typeorm.favorite.model';
-import { TypeOrmProductModel } from './module/catalog/infra/database/model/typeorm.product.model';
 import { TypeOrmIdentityModel } from './module/identity/infra/database/model/typeorm.identity.model';
 
 async function bootstrap() {
@@ -24,7 +23,6 @@ async function bootstrap() {
     entities: [
       TypeOrmCustomerModel,
       TypeOrmFavoriteModel,
-      TypeOrmProductModel,
       TypeOrmIdentityModel,
     ],
     synchronize: true,
@@ -54,6 +52,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(3000);
+  await app.listen(parseInt(process.env.PORT) || 3000);
 }
 bootstrap();

@@ -2,10 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CustomerController } from './customer.controller';
 import { CustomerService } from '../../../application/service/customer.service';
 import { CustomerEntity } from '../../../../../module/customer/domain/entity/customer.entity';
+import { LogControllerEnum } from '../../../../../module/shared/enum/log.enum';
+import { LogService } from '../../../../../module/shared/module/log/log.service';
 
 describe('CustomerController', () => {
   let controller: CustomerController;
   let service: CustomerService;
+  let logService: LogService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -19,11 +22,20 @@ describe('CustomerController', () => {
             delete: jest.fn(),
           },
         },
+        {
+          provide: LogControllerEnum.CUSTOMER,
+          useValue: {
+            log: jest.fn(),
+            error: jest.fn(),
+            setContext: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
     controller = module.get<CustomerController>(CustomerController);
     service = module.get<CustomerService>(CustomerService);
+    logService = module.get<LogService>(LogControllerEnum.CUSTOMER);
   });
 
   afterEach(() => {
@@ -31,14 +43,17 @@ describe('CustomerController', () => {
   });
 
   describe('findOneById', () => {
-    it('should return null if customers not found', async () => {
-      const id = '1';
+    it('should throw Error', async () => {
+      const id = '123';
+      const error = new Error('Fake Error');
 
-      (service.findOneById as jest.Mock).mockResolvedValue(null);
+      (service.findOneById as jest.Mock).mockRejectedValue(error);
+      jest.spyOn(logService, 'error');
 
-      const result = await controller.findOneById(id);
+      await expect(controller.findOneById(id)).rejects.toThrow('Fake Error');
 
-      expect(result).toBeNull();
+      expect(service.findOneById).toHaveBeenCalledWith(id);
+      expect(logService.error).toHaveBeenCalledWith('Error', 'Fake Error');
     });
 
     it('should find customer by id', async () => {
@@ -59,6 +74,26 @@ describe('CustomerController', () => {
   });
 
   describe('update', () => {
+    it('should throw Error', async () => {
+      const id = '123';
+      const dto = {
+        name: 'John John',
+        email: 'johnjohn@email.com',
+      };
+
+      jest.spyOn(service, 'update');
+
+      const error = new Error('Fake Error');
+
+      (service.update as jest.Mock).mockRejectedValue(error);
+      jest.spyOn(logService, 'error');
+
+      await expect(controller.update(id, dto)).rejects.toThrow('Fake Error');
+
+      expect(service.update).toHaveBeenCalledWith(id, dto);
+      expect(logService.error).toHaveBeenCalledWith('Error', 'Fake Error');
+    });
+
     it('should update a customer', async () => {
       const id = '123';
       const dto = {
@@ -76,6 +111,22 @@ describe('CustomerController', () => {
   });
 
   describe('delete', () => {
+    it('should throw Error', async () => {
+      const id = '123';
+
+      jest.spyOn(service, 'delete');
+
+      const error = new Error('Fake Error');
+
+      (service.delete as jest.Mock).mockRejectedValue(error);
+      jest.spyOn(logService, 'error');
+
+      await expect(controller.delete(id)).rejects.toThrow('Fake Error');
+
+      expect(service.delete).toHaveBeenCalledWith(id);
+      expect(logService.error).toHaveBeenCalledWith('Error', 'Fake Error');
+    });
+
     it('should delete a customer', async () => {
       const id = '123';
 

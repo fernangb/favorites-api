@@ -30,14 +30,12 @@ export class FavoriteService {
 
     if (!product) throw new BadRequestException('Product not exists');
 
-    const customerFavorites =
-      await this.repository.findByCustomerId(customerId);
-
-    const hasProduct = customerFavorites.find(
-      (fav) => fav.productId === productId,
+    const hasFavoriteProduct = await this.repository.findByItem(
+      customerId,
+      productId,
     );
 
-    if (hasProduct)
+    if (hasFavoriteProduct)
       throw new BadRequestException('Product is already a favorite');
 
     const favorite = new FavoriteEntity({
@@ -48,18 +46,26 @@ export class FavoriteService {
     return this.repository.create(favorite);
   }
 
-  async findByCustomerId(customerId: string): Promise<FindFavoriteResponse> {
+  async findByCustomerId(
+    customerId: string,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<FindFavoriteResponse> {
     const customer = await this.customerService.findOneById(customerId);
 
     if (!customer) throw new BadRequestException('Customer not exists');
 
-    const favorites = await this.repository.findByCustomerId(customerId);
+    const { data: favorites, total } = await this.repository.findByCustomerId(
+      customerId,
+      page,
+      limit,
+    );
 
     const favoritesIds = favorites.map((favorite) => favorite.productId);
 
-    const products = await this.productService.find();
+    const paginatedProducts = await this.productService.find(page, limit);
 
-    const favoriteProducts = products.filter((product) =>
+    const favoriteProducts = paginatedProducts.data.products.filter((product) =>
       favoritesIds.includes(product.id),
     );
 
@@ -67,6 +73,14 @@ export class FavoriteService {
       data: {
         customer,
         products: favoriteProducts,
+      },
+      metadata: {
+        pagination: {
+          limit,
+          page,
+          total,
+          perPage: favorites.length,
+        },
       },
     };
   }

@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Inject,
   Param,
   Put,
   UseGuards,
@@ -19,11 +20,17 @@ import { CustomerEntity } from '../../../../../module/customer/domain/entity/cus
 import { UpdateCustomerRequest } from '../../../../../module/customer/application/dto/update-customer.dto';
 import { AuthorizationGuard } from '../../../../../module/shared/module/auth/guard/authorization.guard';
 import { AuthenticationGuard } from '../../../../../module/shared/module/auth/guard/authentication.guard';
+import { LogService } from '../../../../../module/shared/module/log/log.service';
+import { LogControllerEnum } from '../../../../../module/shared/enum/log.enum';
 
-@Controller('customers')
+@Controller('customers/v1')
 @ApiTags('Customers')
 export class CustomerController {
-  constructor(private readonly service: CustomerService) {}
+  constructor(
+    private readonly service: CustomerService,
+    @Inject(LogControllerEnum.CUSTOMER)
+    private readonly logger: LogService,
+  ) {}
 
   @Get(':id')
   @ApiOperation({ summary: 'Find customer by id' })
@@ -37,7 +44,20 @@ export class CustomerController {
   })
   @UseGuards(AuthenticationGuard, AuthorizationGuard)
   async findOneById(@Param('id') id: string): Promise<CustomerEntity> {
-    return this.service.findOneById(id);
+    try {
+      this.logger.log('Find customer by id', id);
+      const customer = await this.service.findOneById(id);
+      this.logger.log('Customer found', JSON.stringify(customer));
+
+      return customer;
+    } catch (error) {
+      this.logger.error('Error', error.message);
+      DefaultErrorResponse.getMessage({
+        message: error.message,
+        statusCode: error.status,
+        error: error.name,
+      });
+    }
   }
 
   @ApiOperation({ summary: 'Update customer by id' })
@@ -55,7 +75,18 @@ export class CustomerController {
     @Param('id') id: string,
     @Body() dto: UpdateCustomerRequest,
   ): Promise<void> {
-    return this.service.update(id, dto);
+    try {
+      this.logger.log('Update customer', id);
+      await this.service.update(id, dto);
+      this.logger.log('Customer updated', id);
+    } catch (error) {
+      this.logger.error('Error', error.message);
+      DefaultErrorResponse.getMessage({
+        message: error.message,
+        statusCode: error.status,
+        error: error.name,
+      });
+    }
   }
 
   @ApiOperation({ summary: 'Delete customer by id' })
@@ -70,6 +101,17 @@ export class CustomerController {
   @UseGuards(AuthenticationGuard, AuthorizationGuard)
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
-    return this.service.delete(id);
+    try {
+      this.logger.log('Delete customer', id);
+      await this.service.delete(id);
+      this.logger.log('Customer deleted', id);
+    } catch (error) {
+      this.logger.error('Error', error.message);
+      DefaultErrorResponse.getMessage({
+        message: error.message,
+        statusCode: error.status,
+        error: error.name,
+      });
+    }
   }
 }
