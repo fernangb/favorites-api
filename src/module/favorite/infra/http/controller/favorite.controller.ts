@@ -6,6 +6,7 @@ import {
   Inject,
   Param,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -17,7 +18,10 @@ import {
 import { DefaultErrorResponse } from '../../../../shared/error/default.error';
 import { FavoriteService } from '../../../application/service/favorite.service';
 import { AddFavoriteRequest } from '../../../application/dto/add-favorite.dto';
-import { FindFavoriteResponse } from '../../../application/dto/find-favorite.dto';
+import {
+  FindFavoriteByCustomerIdRequest,
+  FindFavoriteResponse,
+} from '../../../application/dto/find-favorite.dto';
 import { AuthenticationGuard } from '../../../../shared/module/auth/guard/authentication.guard';
 import { AuthorizationGuard } from '../../../../shared/module/auth/guard/authorization.guard';
 import { LogService } from '../../../../shared/module/log/log.service';
@@ -81,10 +85,15 @@ export class FavoriteController {
   @UseGuards(AuthenticationGuard, AuthorizationGuard)
   async findByCustomerId(
     @Param('id') id: string,
+    @Query() query: FindFavoriteByCustomerIdRequest,
   ): Promise<FindFavoriteResponse> {
     try {
       this.logger.log('Find customer favorites products', id);
-      const favorites = await this.service.findByCustomerId(id);
+      const favorites = await this.service.findByCustomerId(
+        id,
+        query.page,
+        query.limit,
+      );
       this.logger.log('Favorites found', favorites);
 
       return favorites;

@@ -6,6 +6,7 @@ import { ChallengeAPIService } from '../../infra/http/api/challenge.api.service'
 import { ProductEntity } from '../../domain/entity/product.entity';
 import { FindProductResponse } from '../dto/find-product.dto';
 import { RepositoryEnum } from '../../../../module/shared/enum/repository.enum';
+import { Pagination } from 'src/module/shared/pagination/pagination';
 
 @Injectable()
 export class ProductService implements IProductService {
@@ -42,14 +43,18 @@ export class ProductService implements IProductService {
     limit: number = 10,
   ): Promise<FindProductResponse> {
     if (Boolean(process.env.IS_MOCKED)) {
-      const startIndex = (page - 1) * limit;
-      const endIndex = startIndex + limit;
+      const pagination = new Pagination<ProductEntity>();
 
-      const products = this.mockProducts.slice(startIndex, endIndex);
+      const items = pagination.getMockedPaginate(
+        page,
+        limit,
+        this.mockProducts,
+      );
 
-      const response = { data: products };
-
-      return Promise.resolve(response);
+      return Promise.resolve({
+        data: { products: items.data },
+        metadata: items.metadata,
+      });
     }
 
     return this.challengeService.find(page);

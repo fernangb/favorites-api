@@ -1,17 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { MetadataResponse } from '../../../../module/shared/dto/metadata.dto';
+import { PaginationRequest } from '../../../../module/shared/dto/pagination.dto';
 
-export class FindProductRequest {
-  @ApiProperty({ example: 1, default: 1 })
-  @IsOptional()
-  @IsNumber()
-  page?: number;
-
-  @ApiProperty({ example: 10, default: 10 })
-  @IsOptional()
-  @IsNumber()
-  limit?: number;
-}
+export class FindProductRequest extends PaginationRequest {}
 
 export class FindProductItemResponse {
   @ApiProperty({ example: '1' })
@@ -40,8 +38,19 @@ export class FindProductItemResponse {
   reviewScore?: number;
 }
 
+export class ProductData {
+  @ApiProperty()
+  @IsArray()
+  products: FindProductItemResponse[];
+}
+
 export class FindProductResponse {
   @ApiProperty()
   @IsArray()
-  data: FindProductItemResponse[];
+  data: ProductData;
+
+  @ApiProperty()
+  @IsObject()
+  @IsOptional()
+  metadata?: MetadataResponse;
 }

@@ -1,6 +1,9 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { IFavoriteRepository } from '../../../domain/repository/favorite.repository';
+import {
+  FindByCustomerId,
+  IFavoriteRepository,
+} from '../../../domain/repository/favorite.repository';
 import { TypeOrmFavoriteMapper } from '../mapper/typeorm.favorite.mapper';
 import { TypeOrmFavoriteModel } from '../model/typeorm.favorite.model';
 import { FavoriteEntity } from '../../../../../module/favorite/domain/entity/favorite.entity';
@@ -17,10 +20,18 @@ export class TypeOrmFavoriteRepository implements IFavoriteRepository {
     await this.repository.save(this.repository.create(model));
   }
 
-  async findByCustomerId(customerId: string): Promise<FavoriteEntity[]> {
-    const models = await this.repository.find({ where: { customerId } });
+  async findByCustomerId(
+    customerId: string,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<FindByCustomerId> {
+    const [models, total] = await this.repository.findAndCount({
+      where: { customerId },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
 
-    return TypeOrmFavoriteMapper.toEntityList(models);
+    return { data: TypeOrmFavoriteMapper.toEntityList(models), total };
   }
 
   async findByItem(

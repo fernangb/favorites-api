@@ -1,7 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { CustomerEntity } from '../../../customer/domain/entity/customer.entity';
-import { IsArray } from 'class-validator';
+import { IsArray, IsObject, IsOptional } from 'class-validator';
 import { FindProductByIdResponse } from '../../../../module/catalog/application/dto/find-product-by-id.dto';
+import { MetadataResponse } from '../../../../module/shared/dto/metadata.dto';
+import { PaginationRequest } from '../../../../module/shared/dto/pagination.dto';
+
+export class FindFavoriteByCustomerIdRequest extends PaginationRequest {}
 
 class FavoriteData {
   @ApiProperty({
@@ -47,4 +51,9 @@ export class FindFavoriteResponse {
   })
   @IsArray()
   data: FavoriteData;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsObject()
+  metadata?: MetadataResponse;
 }
