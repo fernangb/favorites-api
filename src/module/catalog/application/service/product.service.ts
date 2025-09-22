@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { FindProductByIdResponse } from '../dto/find-product-by-id.dto';
 import { IProductService } from '../../domain/service/product.service';
 import { RepositoryEnum } from '../../../shared/enum/repository.enum';
@@ -10,8 +10,13 @@ export class ProductService implements IProductService {
     @Inject(RepositoryEnum.PRODUCT)
     private readonly repository: TypeOrmProductRepository,
   ) {}
+
   async findOneById(id: string): Promise<FindProductByIdResponse> {
-    return this.repository.findOneById(id);
+    const data = await this.repository.findOneById(id);
+
+    if (!data) throw new NotFoundException('Product not found');
+
+    return data;
   }
 
   async find(

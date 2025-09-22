@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Inject, Param, Query } from '@nestjs/common';
 import { ProductService } from '../../../application/service/product.service';
 import {
   ApiBadRequestResponse,
@@ -12,11 +12,17 @@ import {
   FindProductRequest,
   FindProductResponse,
 } from '../../../application/dto/find-product.dto';
+import { LogService } from '../../../../../module/shared/module/log/log.service';
+import { LogControllerEnum } from '../../../../../module/shared/enum/log.enum';
 
-@Controller('products')
+@Controller('products/v1')
 @ApiTags('Products')
 export class ProductController {
-  constructor(private readonly service: ProductService) {}
+  constructor(
+    private readonly service: ProductService,
+    @Inject(LogControllerEnum.PRODUCT)
+    private readonly logger: LogService,
+  ) {}
 
   @Get(':id')
   @ApiOperation({ summary: 'Find product by id' })
@@ -29,7 +35,20 @@ export class ProductController {
     type: DefaultErrorResponse,
   })
   async findOneById(@Param('id') id: string): Promise<FindProductByIdResponse> {
-    return this.service.findOneById(id);
+    try {
+      this.logger.log('Find product by id', id);
+      const product = await this.service.findOneById(id);
+      this.logger.log('Product found', product);
+
+      return product;
+    } catch (error) {
+      this.logger.error('Error', error.message);
+      DefaultErrorResponse.getMessage({
+        message: error.message,
+        statusCode: error.status,
+        error: error.name,
+      });
+    }
   }
 
   @Get()
@@ -45,7 +64,16 @@ export class ProductController {
   async find(
     @Query() query: FindProductRequest,
   ): Promise<FindProductResponse[]> {
-    const { page, limit } = query;
-    return this.service.find(page, limit);
+    try {
+      const { page, limit } = query;
+
+      this.logger.log('Find products', query);
+      const products = await this.service.find(page, limit);
+      this.logger.log('Product found', JSON.stringify(products));
+
+      return products;
+    } catch (error) {
+      this.logger.error('Error', error.message);
+    }
   }
 }

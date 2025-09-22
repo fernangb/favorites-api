@@ -1,11 +1,13 @@
+import { HttpException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 
 interface ErrorProps {
   statusCode: number;
   message: string;
+  error: string;
 }
 
-export class DefaultErrorResponse {
+export class DefaultErrorResponse extends HttpException {
   @ApiProperty({
     description: 'Status code',
     example: 400,
@@ -18,8 +20,23 @@ export class DefaultErrorResponse {
   })
   message: string;
 
-  constructor(props: ErrorProps) {
-    this.statusCode = props.statusCode;
-    this.message = props.message;
+  @ApiProperty({
+    description: 'Error type',
+    example: 'Bad Request',
+  })
+  error: string;
+
+  static getMessage({ message, statusCode, error }: ErrorProps) {
+    throw new HttpException(
+      {
+        statusCode,
+        error,
+        message,
+      },
+      statusCode,
+      {
+        cause: message,
+      },
+    );
   }
 }
