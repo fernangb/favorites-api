@@ -61,13 +61,9 @@ export class FavoriteService {
       limit,
     );
 
-    const favoritesIds = favorites.map((favorite) => favorite.productId);
+    const favoriteIds = favorites.map((favorite) => favorite.productId);
 
-    const paginatedProducts = await this.productService.find(page, limit);
-
-    const favoriteProducts = paginatedProducts.data.products.filter((product) =>
-      favoritesIds.includes(product.id),
-    );
+    const favoriteProducts = await this.productService.findByIds(favoriteIds);
 
     return {
       data: {
