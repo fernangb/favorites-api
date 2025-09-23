@@ -194,6 +194,7 @@ Eu gerei branches a partir da main e ao final de cada tarefa eu fiz uma pull req
 - Esteira de CI/CD
 - Adicionar cache nos endpoints de consulta mais utilizados
 - Interceptor para o traceId, para receber dados de sistemas de observabilidade (Datadog, Kibana, etc)
+- Adicionar índices nas tabelas, para aumentar performance das queries de consulta
 - Adição de API Gateway e Load Balancer para escalabilidade
 
 </details>
