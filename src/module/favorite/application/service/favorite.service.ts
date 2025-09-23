@@ -7,6 +7,7 @@ import { IProductService } from '../../../catalog/domain/service/product.service
 import { ServiceEnum } from '../../../shared/enum/service.enum';
 import { FindFavoriteResponse } from '../dto/find-favorite.dto';
 import { FavoriteEntity } from '../../domain/entity/favorite.entity';
+import { ProductEntity } from 'src/module/catalog/domain/entity/product.entity';
 
 @Injectable()
 export class FavoriteService {
@@ -61,9 +62,11 @@ export class FavoriteService {
       limit,
     );
 
-    const favoriteIds = favorites.map((favorite) => favorite.productId);
-
-    const favoriteProducts = await this.productService.findByIds(favoriteIds);
+    const favoriteProducts: ProductEntity[] = await Promise.all(
+      favorites.map(async (favorite) => {
+        return this.productService.findOneById(favorite.productId);
+      }),
+    );
 
     return {
       data: {

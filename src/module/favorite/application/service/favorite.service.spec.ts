@@ -250,6 +250,8 @@ describe('FavoriteService', () => {
         updatedAt: new Date(),
       });
 
+      jest.spyOn(productService, 'findOneById');
+
       (customerService.findOneById as jest.Mock).mockResolvedValue(customer);
 
       (favoriteRepository.findByCustomerId as jest.Mock).mockResolvedValue({
@@ -257,10 +259,7 @@ describe('FavoriteService', () => {
         total: 1,
       });
 
-      (productService.find as jest.Mock).mockResolvedValue({
-        data: { products: [product] },
-        metadata: { pagination: { page, limit, perPage: 1, total: 1 } },
-      });
+      (productService.findOneById as jest.Mock).mockResolvedValue(product);
 
       const response = await customerFavoriteProductService.findByCustomerId(
         customerId,
@@ -272,7 +271,7 @@ describe('FavoriteService', () => {
       expect(response.data.products).toEqual([product]);
       expect(customerService.findOneById).toHaveBeenCalled();
       expect(favoriteRepository.findByCustomerId).toHaveBeenCalled();
-      expect(productService.find).toHaveBeenCalled();
+      expect(productService.findOneById).toHaveBeenCalled();
     });
   });
 

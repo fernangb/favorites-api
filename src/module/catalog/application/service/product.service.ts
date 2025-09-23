@@ -59,17 +59,4 @@ export class ProductService implements IProductService {
 
     return this.challengeService.find(page);
   }
-
-  async findByIds(ids: string[]): Promise<ProductEntity[]> {
-    let products: ProductEntity[];
-
-    if (Boolean(process.env.IS_MOCKED)) {
-      products = this.mockProducts;
-    }
-
-    const data = await this.challengeService.find(1);
-    products = data.data.products;
-
-    return products.filter((item) => ids.includes(item.id));
-  }
 }
