@@ -172,7 +172,7 @@ Eu gerei branches a partir da main e ao final de cada tarefa eu fiz uma pull req
 <summary><b>Desafios Enfrentados</b></summary>
 - Eu comecei implementando testes e2e para os controllers, mas eles falharam ao adicionar os guards de autenticação e autorização, pois os hashes e tokens gerados não combinavam
 - A autenticação estava se relacionando com o customer e não com identity, fazendo os endpoints retornarem sempre 403
-- Incialmente a parte de favorites estava no mesmo contexto que customers, mas eu decidi separar pois eles tinham razões diferentes para crescerem, sendo necessário separá-los via refatoração
+- Inicialmente a parte de favorites estava no mesmo contexto que customers, mas eu decidi separar pois eles tinham razões diferentes para crescerem, sendo necessário separá-los via refatoração
 
 </details>
 
